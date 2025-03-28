@@ -1,16 +1,12 @@
-
-
-import {useStyles} from "./styles.ts"
+import AuthProvider from "./provider/AuthProvider.tsx";
+import Routes from "./routes/Routes.tsx";
 
 function App() {
 
-    const classes = useStyles()
-
     return (
-        <>
-            <div>Что</div>
-            <button className={classes.redButton}>Кнопка</button>
-        </>
+        <AuthProvider>
+            <Routes />
+        </AuthProvider>
     )
 }
 
