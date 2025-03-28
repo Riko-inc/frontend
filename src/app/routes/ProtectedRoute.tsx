@@ -1,24 +1,29 @@
-import {useAuth} from "../provider/AuthProvider.tsx";
+
 import {Navigate, Outlet, useLocation} from "react-router-dom"
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import {useAuth} from "../provider/AuthProvider.tsx";
 
 export const ProtectedRoute = () => {
 
     const location = useLocation();
-    const { checkTokens } = useAuth();
+    const { isAuthenticated, authLoading } = useAuth();
+    // const [isAuthenticated, setIsAuthenticated] = useState(false);
+    //
+    // useEffect(() => {
+    //     if (isLoading) return
+    //
+    //     const verifyAuth = async () => {
+    //         console.log("ProtectedRoute");
+    //         const tokensAreValid = await checkTokens();
+    //         setIsAuthenticated(tokensAreValid);
+    //     };
+    //
+    //     verifyAuth()
+    // }, [isLoading]);
 
-    useEffect(() => {
-        const verifyAuth = async () => {
-            const tokensAreValid = await checkTokens();
+    //location.pathname
 
-            if (!tokensAreValid) {
-                return <Navigate to="/login" />;
-            }
-        };
+    if (authLoading) return <div>Loading...</div>
 
-        verifyAuth()
-            .then(r => r);
-    }, [location.pathname]);
-
-    return <Outlet />
+    return !isAuthenticated ? <Navigate to="/login" replace /> : <Outlet />;
 }

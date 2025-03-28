@@ -1,13 +1,13 @@
 import {FieldValues, useForm} from "react-hook-form";
-import {useMutation} from "@tanstack/react-query";
-import {apiAxios} from "../../shared/config.ts";
+
 import {useAuth} from "../../app/provider/AuthProvider.tsx";
 import {useNavigate} from "react-router-dom";
+import {IUser} from "./types.ts";
+import {useMutation} from "@tanstack/react-query";
+import {apiAxios} from "../../shared/config.ts";
+import {useEffect} from "react";
 
 const Registration = () => {
-
-    const { setAccessToken, setRefreshToken } = useAuth();
-    const navigate = useNavigate();
 
     const {
         register,
@@ -15,39 +15,45 @@ const Registration = () => {
         formState: {errors},
     } = useForm();
 
+    const { accessToken, setAccessToken, setRefreshToken } = useAuth();
+    const navigate = useNavigate();
 
-    interface IUser {
-        email: string;
-        password: string;
-    }
+    // useEffect(() => {
+    //     if (accessToken) {
+    //         navigate("/main", { replace: true });
+    //     }
+    // }, [accessToken, navigate]);
 
-    interface IJwtTokens {
-        accessToken: string;
-        refreshToken: string;
-    }
 
-    const mutation = useMutation({
-        mutationFn: (newUser: IUser): Promise<IJwtTokens> =>
+    const sendUser = useMutation({
+        mutationFn: (newUser: IUser) =>
             apiAxios.post("/auth/register", {
                 email: newUser.email,
                 password: newUser.password,
-             }),
-        onSuccess: (data) => {
-            setAccessToken(data.accessToken)
-            setRefreshToken(data.refreshToken)
-            navigate("/main")
+            }),
+        onSuccess: async (data) => {
+            await new Promise<void>(resolve => {
+                setAccessToken(data.data.accessToken);
+                setRefreshToken(data.data.refreshToken);
+                resolve();
+            });
+            navigate("/main", { replace: true });
+            console.log("tokens", data)
+            //и еще проблема здесь
         },
         onError: (error) => {
             console.error(error);
         }
     });
 
+
     const onSubmit = (data: FieldValues) => {
-        const newUser: IUser = {
-            email: data.email,
-            password: data.password
-        }
-        mutation.mutate(newUser)
+        console.log("register");
+        sendUser.mutate(
+            {
+                email: data.email,
+                password: data.password},
+        )
     }
 
     return (
@@ -71,9 +77,9 @@ const Registration = () => {
                 {errors.password && <div>Password is wrong</div>}
                 <div>
                     <button
-                            disabled={mutation.isPending}
+                            disabled={sendUser.isPending}
                             type="submit"
-                    >{mutation.isPending ? 'Creating...' : 'Sign up'}</button>
+                    >{sendUser.isPending ? 'Creating...' : 'Sign up'}</button>
                 </div>
 
             </form>

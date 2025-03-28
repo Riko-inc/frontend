@@ -1,12 +1,21 @@
 import AuthProvider from "./provider/AuthProvider.tsx";
-import Routes from "./routes/Routes.tsx";
+
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+
+import Routes from "./routes/Routes.tsx"
+
+
+
+const queryClient = new QueryClient()
 
 function App() {
 
     return (
-        <AuthProvider>
-            <Routes />
-        </AuthProvider>
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                <Routes />
+            </AuthProvider>
+        </QueryClientProvider>
     )
 }
 

@@ -1,6 +1,11 @@
 import {ProtectedRoute} from "./ProtectedRoute.tsx";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {RouteForNotAuthenticated} from "./RouteForNotAuthenticated.tsx";
+import Authorization from "../../pages/Authorization/Authorization.tsx";
+import Registration from "../../pages/Authorization/Registration.tsx";
+import Main from "../../pages/Main.tsx";
+
+
 
 const Routes = () => {
 
@@ -13,12 +18,12 @@ const Routes = () => {
 
     const routesForAuthenticatedOnly = [
         {
-            path: "/",
+
             element: <ProtectedRoute />,
             children: [
                 {
                     path: "/main",
-                    element: <div>Main page</div>,
+                    element: <Main />,
                 }
             ]
         }
@@ -26,16 +31,17 @@ const Routes = () => {
 
     const routesForNotAuthenticatedOnly = [
         {
-            path: "/",
+
             element: <RouteForNotAuthenticated />,
             children: [
                 {
                     path: "/login",
-                    element: <div>Авторизация</div>
+                    element: <Authorization />
+
                 },
                 {
                     path: "/sign-up",
-                    element: <div>Регистрация</div>,
+                    element: <Registration />,
                 }
             ]
         }
@@ -44,8 +50,12 @@ const Routes = () => {
 
     const router = createBrowserRouter([
         ...routesForPublic,
-        ...routesForAuthenticatedOnly,
         ...routesForNotAuthenticatedOnly,
+        ...routesForAuthenticatedOnly,
+        {
+            path: "*",
+            element: <div>404 Not Found</div>
+        }
     ])
 
     return <RouterProvider router={router} />
