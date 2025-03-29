@@ -1,13 +1,11 @@
 import {FieldValues, useForm} from "react-hook-form";
 
-import {useAuth} from "../../app/provider/AuthProvider.tsx";
+import {api, useAuth} from "../../app/provider/AuthProvider.tsx";
 import {useNavigate} from "react-router-dom";
 import {IUser} from "./types.ts";
 import {useMutation} from "@tanstack/react-query";
-import {apiAxios} from "../../shared/config.ts";
-import {useEffect} from "react";
 
-const Registration = () => {
+const Authorization = () => {
 
     const {
         register,
@@ -15,41 +13,29 @@ const Registration = () => {
         formState: {errors},
     } = useForm();
 
-    const { accessToken, setAccessToken, setRefreshToken } = useAuth();
+    const { setTokens } = useAuth();
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     if (accessToken) {
-    //         navigate("/main", { replace: true });
-    //     }
-    // }, [accessToken, navigate]);
-
-
-    const sendUser = useMutation({
+    const sendUserMutation = useMutation({
         mutationFn: (newUser: IUser) =>
-            apiAxios.post("/auth/register", {
+            api.post("/auth/authenticate", {
                 email: newUser.email,
                 password: newUser.password,
             }),
         onSuccess: async (data) => {
-            await new Promise<void>(resolve => {
-                setAccessToken(data.data.accessToken);
-                setRefreshToken(data.data.refreshToken);
-                resolve();
-            });
+            setTokens(data.data);
             navigate("/main", { replace: true });
             console.log("tokens", data)
-            //и еще проблема здесь
+
         },
         onError: (error) => {
             console.error(error);
         }
     });
 
-
     const onSubmit = (data: FieldValues) => {
-        console.log("register");
-        sendUser.mutate(
+        console.log("auth");
+        sendUserMutation.mutate(
             {
                 email: data.email,
                 password: data.password},
@@ -58,7 +44,7 @@ const Registration = () => {
 
     return (
         <>
-            <div>Регистрация</div>
+            <div>Авторизация</div>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <input
                     {...register("email", {
@@ -77,14 +63,15 @@ const Registration = () => {
                 {errors.password && <div>Password is wrong</div>}
                 <div>
                     <button
-                            disabled={sendUser.isPending}
-                            type="submit"
-                    >{sendUser.isPending ? 'Creating...' : 'Sign up'}</button>
+                        disabled={sendUserMutation.isPending}
+                        type="submit"
+                    >{sendUserMutation.isPending ? 'Entering...' : 'Log in'}</button>
                 </div>
 
             </form>
+            <button onClick={() => navigate('/sign-up')}>Перейти в регистрацию</button>
         </>
     )
 }
 
-export default Registration;
+export default Authorization;

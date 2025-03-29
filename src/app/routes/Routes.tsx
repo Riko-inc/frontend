@@ -1,9 +1,9 @@
 import {ProtectedRoute} from "./ProtectedRoute.tsx";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {RouteForNotAuthenticated} from "./RouteForNotAuthenticated.tsx";
-import Authorization from "../../pages/Authorization/Authorization.tsx";
-import Registration from "../../pages/Authorization/Registration.tsx";
-import Main from "../../pages/Main.tsx";
+import Authorization from "../../pages/Log in/Authorization.tsx";
+import Registration from "../../pages/Log in/Registration.tsx";
+import Main from "../../pages/Main/Main.tsx";
 
 
 
