@@ -22,7 +22,7 @@ const Routes = () => {
             element: <ProtectedRoute />,
             children: [
                 {
-                    path: "/main",
+                    path: "/frontend/main",
                     element: <Main />,
                 }
             ]

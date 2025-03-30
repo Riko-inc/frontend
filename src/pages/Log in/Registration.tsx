@@ -26,7 +26,7 @@ const Registration = () => {
             }),
         onSuccess: async (data) => {
             setTokens(data.data);
-            navigate("/main", { replace: true });
+            navigate("/frontend/main", { replace: true });
             console.log("tokens", data)
             //и еще проблема здесь
         },
