@@ -18,13 +18,13 @@ const Authorization = () => {
 
     const sendUserMutation = useMutation({
         mutationFn: (newUser: IUser) =>
-            api.post("/auth/authenticate", {
+            api.post("/auth/api/v1/auth/authenticate", {
                 email: newUser.email,
                 password: newUser.password,
             }),
         onSuccess: async (data) => {
             setTokens(data.data);
-            navigate("/main", { replace: true });
+            navigate("/", { replace: true });
             console.log("tokens", data)
 
         },
@@ -65,7 +65,7 @@ const Authorization = () => {
                     <button
                         disabled={sendUserMutation.isPending}
                         type="submit"
-                    >{sendUserMutation.isPending ? 'Entering...' : 'Log in'}</button>
+                    >{sendUserMutation.isPending ? 'Entering...' : 'Login'}</button>
                 </div>
 
             </form>

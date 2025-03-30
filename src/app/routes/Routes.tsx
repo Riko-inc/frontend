@@ -1,8 +1,8 @@
 import {ProtectedRoute} from "./ProtectedRoute.tsx";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {RouteForNotAuthenticated} from "./RouteForNotAuthenticated.tsx";
-import Authorization from "../../pages/Log in/Authorization.tsx";
-import Registration from "../../pages/Log in/Registration.tsx";
+import Authorization from "../../pages/Login/Authorization.tsx";
+import Registration from "../../pages/Login/Registration.tsx";
 import Main from "../../pages/Main/Main.tsx";
 
 
@@ -22,7 +22,7 @@ const Routes = () => {
             element: <ProtectedRoute />,
             children: [
                 {
-                    path: "/main",
+                    path: "/",
                     element: <Main />,
                 }
             ]
