@@ -1,16 +1,32 @@
 
+import AuthProvider from "./provider/AuthProvider.tsx";
 
-import {useStyles} from "./styles.ts"
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+
+import Routes from "./routes/Routes.tsx"
+
+
+
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+            retry: (failureCount, error: any) => {
+                if (error?.response?.status === 403) return failureCount < 1;
+                return failureCount < 3;
+            }
+        }
+    }
+});
 
 function App() {
 
-    const classes = useStyles()
-
     return (
-        <>
-            <div>Что</div>
-            <button className={classes.redButton}>Кнопка</button>
-        </>
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                <Routes />
+            </AuthProvider>
+        </QueryClientProvider>
     )
 }
 
