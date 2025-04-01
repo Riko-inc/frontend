@@ -71,7 +71,7 @@ const Registration = () => {
                 </div>
 
             </form>
-            <button onClick={() => navigate('/login')}>Перейти в авторизацию</button>
+            <button onClick={() => navigate('/frontend/login')}>Перейти в авторизацию</button>
         </>
     )
 }
