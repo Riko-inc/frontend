@@ -12,7 +12,7 @@ const queryClient = new QueryClient({
         queries: {
             refetchOnWindowFocus: false,
             retry: (failureCount, error: any) => {
-                if (error?.response?.status === 403) return false;
+                if (error?.response?.status === 403) return failureCount < 1;
                 return failureCount < 3;
             }
         }

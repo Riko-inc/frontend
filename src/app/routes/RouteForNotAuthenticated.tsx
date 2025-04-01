@@ -5,5 +5,5 @@ export const RouteForNotAuthenticated = () => {
 
     const { isAuthenticated } = useAuth();
 
-    return isAuthenticated ? <Navigate to="/frontend/main" replace /> : <Outlet />;
+    return isAuthenticated ? <Navigate to="/" replace /> : <Outlet />;
 }

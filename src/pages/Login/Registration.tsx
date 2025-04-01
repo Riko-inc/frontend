@@ -20,15 +20,14 @@ const Registration = () => {
 
     const sendUserMutation = useMutation({
         mutationFn: (newUser: IUser) =>
-            api.post("/auth/register", {
+            api.post("/auth/api/v1/auth/register", {
                 email: newUser.email,
                 password: newUser.password,
             }),
         onSuccess: async (data) => {
             setTokens(data.data);
-            navigate("/frontend/main", { replace: true });
-            console.log("tokens", data)
-            //и еще проблема здесь
+            navigate("/", { replace: true });
+
         },
         onError: (error) => {
             console.error(error);
