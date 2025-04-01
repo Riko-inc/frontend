@@ -24,7 +24,7 @@ const Authorization = () => {
             }),
         onSuccess: async (data) => {
             setTokens(data.data);
-            navigate("/", { replace: true });
+            navigate("/frontend/", { replace: true });
             console.log("tokens", data)
 
         },

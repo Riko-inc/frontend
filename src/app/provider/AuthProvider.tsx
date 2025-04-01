@@ -85,7 +85,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                 if (error.response?.status === 403 && !originalRequest._retry) {
                     if (originalRequest.url.includes('refresh-token')) {
                         clearTokens();
-                        window.location.href = '/login';
+                        window.location.href = '/frontend/login';
 
                         return Promise.reject(error);
                     }
@@ -100,7 +100,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                     } catch (refreshError) {
                         clearTokens();
                         queryClient.clear();
-                        window.location.href = '/login';
+                        window.location.href = '/frontend/login';
                         return Promise.reject(refreshError);
                     }
                 }
