@@ -26,7 +26,7 @@ const Registration = () => {
             }),
         onSuccess: async (data) => {
             setTokens(data.data);
-            navigate("/", { replace: true });
+            navigate("/frontend/", { replace: true });
 
         },
         onError: (error) => {
@@ -71,7 +71,7 @@ const Registration = () => {
                 </div>
 
             </form>
-            <button onClick={() => navigate('/login')}>Перейти в авторизацию</button>
+            <button onClick={() => navigate('/frontend/login')}>Перейти в авторизацию</button>
         </>
     )
 }

@@ -11,7 +11,7 @@ const Routes = () => {
 
     const routesForPublic = [
         {
-            path: "/about-us",
+            path: "/frontend/about-us",
             element: <div>About us</div>
         }
     ]
@@ -22,7 +22,7 @@ const Routes = () => {
             element: <ProtectedRoute />,
             children: [
                 {
-                    path: "/",
+                    path: "/frontend/",
                     element: <Main />,
                 }
             ]
@@ -35,12 +35,12 @@ const Routes = () => {
             element: <RouteForNotAuthenticated />,
             children: [
                 {
-                    path: "/login",
+                    path: "/frontend/login",
                     element: <Authorization />
 
                 },
                 {
-                    path: "/sign-up",
+                    path: "/frontend/sign-up",
                     element: <Registration />,
                 }
             ]

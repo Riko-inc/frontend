@@ -24,7 +24,7 @@ const Authorization = () => {
             }),
         onSuccess: async (data) => {
             setTokens(data.data);
-            navigate("/", { replace: true });
+            navigate("/frontend/", { replace: true });
             console.log("tokens", data)
 
         },
@@ -67,9 +67,8 @@ const Authorization = () => {
                         type="submit"
                     >{sendUserMutation.isPending ? 'Entering...' : 'Login'}</button>
                 </div>
-
             </form>
-            <button onClick={() => navigate('/sign-up')}>Перейти в регистрацию</button>
+            <button onClick={() => navigate('/frontend/sign-up')}>Перейти в регистрацию</button>
         </>
     )
 }
