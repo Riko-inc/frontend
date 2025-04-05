@@ -4,6 +4,7 @@ import {api, useAuth} from "../../app/provider/AuthProvider.tsx";
 import {useNavigate} from "react-router-dom";
 import {IUser} from "./types.ts";
 import {useMutation} from "@tanstack/react-query";
+import {ROUTES} from "../../app/routes/Routes.tsx";
 
 const Authorization = () => {
 
@@ -24,7 +25,7 @@ const Authorization = () => {
             }),
         onSuccess: async (data) => {
             setTokens(data.data);
-            navigate("/frontend/", { replace: true });
+            navigate(ROUTES.MAIN, { replace: true });
             console.log("tokens", data)
 
         },
@@ -38,7 +39,8 @@ const Authorization = () => {
         sendUserMutation.mutate(
             {
                 email: data.email,
-                password: data.password},
+                password: data.password
+            },
         )
     }
 
@@ -68,7 +70,7 @@ const Authorization = () => {
                     >{sendUserMutation.isPending ? 'Entering...' : 'Login'}</button>
                 </div>
             </form>
-            <button onClick={() => navigate('/frontend/sign-up')}>Перейти в регистрацию</button>
+            <button onClick={() => navigate(ROUTES.SIGNUP)}>Перейти в регистрацию</button>
         </>
     )
 }

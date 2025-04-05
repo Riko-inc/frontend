@@ -3,6 +3,7 @@ import {api, useAuth} from "../../app/provider/AuthProvider.tsx";
 import {useNavigate} from "react-router-dom";
 import {IUser} from "./types.ts";
 import {useMutation} from "@tanstack/react-query";
+import {ROUTES} from "../../app/routes/Routes.tsx";
 
 
 const Registration = () => {
@@ -26,8 +27,7 @@ const Registration = () => {
             }),
         onSuccess: async (data) => {
             setTokens(data.data);
-            navigate("/frontend/", { replace: true });
-
+            navigate(ROUTES.MAIN, { replace: true });
         },
         onError: (error) => {
             console.error(error);
@@ -71,7 +71,7 @@ const Registration = () => {
                 </div>
 
             </form>
-            <button onClick={() => navigate('/frontend/login')}>Перейти в авторизацию</button>
+            <button onClick={() => navigate(ROUTES.LOGIN)}>Перейти в авторизацию</button>
         </>
     )
 }

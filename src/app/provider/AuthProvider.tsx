@@ -4,6 +4,7 @@ import {ReactNode} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import axios from "axios";
 import {IJwtTokens} from "../../pages/Login/types.ts";
+import {ROUTES} from "../routes/Routes.tsx";
 
 
 interface IAuthContext {
@@ -85,7 +86,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                 if (error.response?.status === 403 && !originalRequest._retry) {
                     if (originalRequest.url.includes('refresh-token')) {
                         clearTokens();
-                        window.location.href = '/frontend/login';
+                        window.location.href = ROUTES.LOGIN;
 
                         return Promise.reject(error);
                     }
@@ -100,7 +101,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                     } catch (refreshError) {
                         clearTokens();
                         queryClient.clear();
-                        window.location.href = '/frontend/login';
+                        window.location.href = ROUTES.LOGIN;
                         return Promise.reject(refreshError);
                     }
                 }

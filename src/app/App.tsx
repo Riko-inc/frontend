@@ -10,6 +10,7 @@ import Routes from "./routes/Routes.tsx"
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
+            // keepPreviousData: true,
             refetchOnWindowFocus: false,
             retry: (failureCount, error: any) => {
                 if (error?.response?.status === 403) return failureCount < 1;

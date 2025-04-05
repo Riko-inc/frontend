@@ -4,15 +4,32 @@ import {RouteForNotAuthenticated} from "./RouteForNotAuthenticated.tsx";
 import Authorization from "../../pages/Login/Authorization.tsx";
 import Registration from "../../pages/Login/Registration.tsx";
 import Main from "../../pages/Main/Main.tsx";
+import TodoList from "../../pages/TodoList/TodoList.tsx";
+import Page404 from "../../pages/Page404/Page404.tsx";
+import TokenTestPage from "../../pages/Main/TokenTestPage.tsx";
 
+const basePath: string = import.meta.env.VITE_ENV_BASE_PATH;
+const envVar: string = basePath ? basePath : "";
 
+export const ROUTES = {
+    MAIN: envVar + "/",
+    ABOUT: envVar + "/about",
+    LOGIN: envVar + "/login",
+    SIGNUP: envVar + "/sign-up",
+    TODOLIST: envVar + "/todolist",
+    TEST: envVar + "/test",
+};
 
 const Routes = () => {
 
     const routesForPublic = [
         {
-            path: "/frontend/about-us",
-            element: <div>About us</div>
+            path: ROUTES.ABOUT,
+            element: <div>About</div>
+        },
+        {
+            path: ROUTES.TEST,
+            element: <TokenTestPage />
         }
     ]
 
@@ -22,8 +39,12 @@ const Routes = () => {
             element: <ProtectedRoute />,
             children: [
                 {
-                    path: "/frontend/",
+                    path: ROUTES.MAIN,
                     element: <Main />,
+                },
+                {
+                    path: ROUTES.TODOLIST,
+                    element: <TodoList />,
                 }
             ]
         }
@@ -35,12 +56,12 @@ const Routes = () => {
             element: <RouteForNotAuthenticated />,
             children: [
                 {
-                    path: "/frontend/login",
+                    path: ROUTES.LOGIN,
                     element: <Authorization />
 
                 },
                 {
-                    path: "/frontend/sign-up",
+                    path: ROUTES.SIGNUP,
                     element: <Registration />,
                 }
             ]
@@ -54,7 +75,7 @@ const Routes = () => {
         ...routesForAuthenticatedOnly,
         {
             path: "*",
-            element: <div>404 Not Found</div>
+            element: <Page404 />
         }
     ])
 
