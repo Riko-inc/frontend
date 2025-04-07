@@ -1,17 +1,33 @@
 import {Controller, useForm} from "react-hook-form";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../../app/provider/AuthProvider.tsx";
-import {ITaskResponse} from "./types.ts";
+import {ITaskRequest} from "./types.ts";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import {API_ENDPOINTS} from "../../shared/config.ts";
+import Image from "./Image.tsx";
+import {useUsers} from "./lib.ts";
+import {useState} from "react";
+
+
+const TaskDefaultValues: ITaskRequest = {
+    title: "",
+    description: "",
+    status: "NEW",
+    priority: "DEFAULT",
+    assignedToUserId: "",
+    dueTo: null,
+}
+
+
 
 const CreateTaskForm = () => {
 
-
-
     const queryClient = useQueryClient();
+
+    const [error, setError] = useState(false)
+    const {data: users} = useUsers()
 
     const {
         register,
@@ -19,10 +35,12 @@ const CreateTaskForm = () => {
         handleSubmit,
         formState: {errors},
         reset,
-    } = useForm<ITaskResponse>();
+    } = useForm<ITaskRequest>({
+        defaultValues: TaskDefaultValues,
+    });
 
     const createTaskMutation = useMutation({
-        mutationFn: (newTask: ITaskResponse) => {
+        mutationFn: (newTask: ITaskRequest) => {
             const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
             return api.post(API_ENDPOINTS.CREATE_TASK, {
                 ...newTask,
@@ -33,13 +51,19 @@ const CreateTaskForm = () => {
             console.log("чел, задача создалась", data)
             queryClient.invalidateQueries({ queryKey: ['tasks'] })
             reset()
+
         },
         onError: (error) => {
             console.error(error);
+            setError(true);
+            const timer = setTimeout(() => {
+                setError(false);
+                clearTimeout(timer);
+            }, 20000);
         }
     });
 
-    const onSubmit = (data: ITaskResponse) => {
+    const onSubmit = (data: ITaskRequest) => {
         console.log("createTaskMutation");
         createTaskMutation.mutate(data)
         console.log(data)
@@ -57,7 +81,12 @@ const CreateTaskForm = () => {
                     })}
                     placeholder="Заголовок"
                 />
-                {errors.title && <div>title is wrong</div>}
+                {errors.title && (
+                    <>
+                        <div>title is wrong</div>
+                        <Image />
+                    </>
+                )}
                 <input
                     {...register("description")}
                     //type="password"
@@ -66,7 +95,6 @@ const CreateTaskForm = () => {
                 {errors.description && <div>description is wrong</div>}
                 <select
                     {...register('status')}
-                    defaultValue="NEW"
                     // aria-invalid={!!errors.category}
                 >
                     <option value="NEW">Новое</option>
@@ -76,7 +104,6 @@ const CreateTaskForm = () => {
                 {errors.status && <div>status is wrong</div>}
                 <select
                     {...register('priority')}
-                    defaultValue="DEFAULT"
                     // aria-invalid={!!errors.category}
                 >
                     <option value="DEFAULT">Обычный</option>
@@ -85,11 +112,19 @@ const CreateTaskForm = () => {
                     <option value="HIGH">Высокий</option>
                 </select>
                 {errors.priority && <div>priority is wrong</div>}
-                <input
+                <select
                     {...register("assignedToUserId")}
-                    // defaultValue={user?.id || ""}
-                    placeholder="ID кому назначено"
-                />
+                >
+                    <option value="" hidden>
+                        Выберите пользователя
+                    </option>
+                    <option value="">Без пользователя</option>
+                    {users ? users.map((user) => (
+                        <option value={user.id} key={user.id}>
+                            Пользователь с id {user.id}
+                        </option>
+                    )) : null}
+                </select>
                 {errors.assignedToUserId && <div>User is wrong</div>}
                 <Controller
                     control={control}
@@ -115,6 +150,7 @@ const CreateTaskForm = () => {
                     >{createTaskMutation.isPending ? 'Creating...' : 'Create'}</button>
                 </div>
             </form>
+            {error && <Image />}
         </>
     )
 }

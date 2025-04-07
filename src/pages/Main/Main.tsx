@@ -18,7 +18,7 @@ const Main = () => {
             <button onClick={() => clearTokens()}>Выйти из аккаунта</button>
 
             <button onClick={() => navigate(ROUTES.TODOLIST)}>TodoList</button>
-            <button onClick={() => navigate(ROUTES.TEST)}>TokenTest</button>
+            {/*<button onClick={() => navigate(ROUTES.TEST)}>TokenTest</button>*/}
         </>
     )
 }

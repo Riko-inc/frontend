@@ -3,10 +3,13 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../../app/provider/AuthProvider.tsx";
 import EditTaskForm from "./EditTaskForm.tsx";
 import {API_ENDPOINTS} from "../../shared/config.ts";
+import {useState} from "react";
+import Image from "./Image.tsx";
 
 const Task = ({ task }: {task: ITaskResponse}) => {
 
     const queryClient = useQueryClient();
+    const [error, setError] = useState(false)
 
     const deleteTaskMutation = useMutation({
         mutationFn: () =>
@@ -17,6 +20,11 @@ const Task = ({ task }: {task: ITaskResponse}) => {
         },
         onError: (error) => {
             console.error(error);
+            setError(true);
+            const timer = setTimeout(() => {
+                setError(false);
+                clearTimeout(timer);
+            }, 20000);
         }
     });
 
@@ -26,16 +34,20 @@ const Task = ({ task }: {task: ITaskResponse}) => {
     }
 
     return (
-        <>
+        <div>
             <div>------------------------------------------</div>
-            <div>{task.taskId}</div>
+            <div>ID {task.taskId}</div>
             <div>{task.title}</div>
             <div>{task.description}</div>
-            <div>{task.status}</div>
-            <div>{task.priority}</div>
+            <div>Статус {task.status}</div>
+            <div>Приоритет {task.priority}</div>
+            <div>Кому назначено {task.assignedToUserId}</div>
+            <div>Автор назначил {task.createdByUserId}</div>
+            <div>Дата создания {task.createdDate}</div>
             <EditTaskForm task={task} />
             <button onClick={() => deleteTask()}>Удалить задачу</button>
-        </>
+            {error && <Image />}
+        </div>
     )
 }
 

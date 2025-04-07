@@ -6,11 +6,16 @@ import {useState} from "react";
 import DatePicker from "react-datepicker";
 import {format, parse} from "date-fns";
 import {API_ENDPOINTS} from "../../shared/config.ts";
+import Image from "./Image.tsx";
+import {useUsers} from "./lib.ts";
 
 const EditTaskForm = ({ task }: {task: ITaskResponse}) => {
 
     const [isEditing, setIsEditing] = useState(false);
     const queryClient = useQueryClient();
+
+    const [error, setError] = useState(false)
+    const {data: users} = useUsers()
 
     const {
         register,
@@ -38,6 +43,12 @@ const EditTaskForm = ({ task }: {task: ITaskResponse}) => {
         },
         onError: (error) => {
             console.error(error);
+            setError(true);
+            const timer = setTimeout(() => {
+                setError(false);
+                clearTimeout(timer);
+            }, 20000);
+
         }
     });
 
@@ -92,10 +103,16 @@ const EditTaskForm = ({ task }: {task: ITaskResponse}) => {
                             <option value="HIGH">Высокий</option>
                         </select>
                         {errors.priority && <div>priority is wrong</div>}
-                        <input
+                        <select
                             {...register("assignedToUserId")}
-                            placeholder="ID кому назначено"
-                        />
+                        >
+                            <option value="">Без пользователя</option>
+                            {users ? users.map((user) => (
+                                <option value={user.id} key={user.id}>
+                                    Пользователь с id {user.id}
+                                </option>
+                            )) : null}
+                        </select>
                         {errors.assignedToUserId && <div>User is wrong</div>}
                         <Controller
                             control={control}
@@ -130,6 +147,7 @@ const EditTaskForm = ({ task }: {task: ITaskResponse}) => {
                             >{editTaskMutation.isPending ? 'Editing...' : 'Edit'}</button>
                         </div>
                     </form>
+                    {error && <Image />}
                 </>
             }
         </>

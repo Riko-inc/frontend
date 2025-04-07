@@ -3,8 +3,8 @@ import {ReactNode} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import axios from "axios";
 import {IJwtTokens} from "../../pages/Login/types.ts";
-import {ROUTES} from "../routes/Routes.tsx";
 import {jwtDecode} from "jwt-decode";
+import {API_ENDPOINTS} from "../../shared/config.ts";
 
 
 interface IAuthContext {
@@ -62,11 +62,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         localStorage.removeItem('refreshToken');
         setAccessToken(null);
         setRefreshToken(null);
+        queryClient.clear();
     }, []);
 
     const getNewTokens = useCallback(async () => {
         if (!refreshToken) throw new Error('No refresh token');
-        const response = await api.post('/auth/api/v1/auth/refresh-token', {
+        const response = await api.post(API_ENDPOINTS.REFRESH, {
             "refreshToken": refreshToken });
         return response.data;
     }, [refreshToken]);
@@ -111,7 +112,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                 if (error.response?.status === 403 && !originalRequest._retry) {
                     if (originalRequest.url.includes('refresh-token')) {
                         clearTokens();
-                        window.location.href = ROUTES.LOGIN;
+                        // window.location.href = ROUTES.LOGIN;
 
                         return Promise.reject(error);
                     }
@@ -126,7 +127,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                     } catch (refreshError) {
                         clearTokens();
                         queryClient.clear();
-                        window.location.href = ROUTES.LOGIN;
+                        // window.location.href = ROUTES.LOGIN;
                         return Promise.reject(refreshError);
                     }
                 }
