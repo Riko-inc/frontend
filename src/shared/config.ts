@@ -1,9 +1,7 @@
-const testUrl: string = "http://82.202.138.236:31064"
-export const API_URL: string = testUrl;
-// + "/auth/api/v1";
+const API_URL: string = "http://82.202.138.236:31064";
 
-const authService: string = "/auth/api/v1/auth"
-const taskService: string = "/task/api/v1"
+const authService: string = API_URL + "/auth/api/v1/auth"
+const taskService: string = API_URL + "/task/api/v1"
 
 
 export const API_ENDPOINTS = {
