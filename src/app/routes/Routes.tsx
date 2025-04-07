@@ -8,8 +8,8 @@ import TodoList from "../../pages/TodoList/TodoList.tsx";
 import Page404 from "../../pages/Page404/Page404.tsx";
 import TokenTestPage from "../../pages/Main/TokenTestPage.tsx";
 
-const basePath: string = import.meta.env.VITE_ENV_BASE_PATH;
-const envVar: string = basePath ? basePath : "";
+
+const envVar: string = "/frontend"
 
 export const ROUTES = {
     MAIN: envVar + "/",

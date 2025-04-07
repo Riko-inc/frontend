@@ -1,5 +1,4 @@
 import {createContext, useCallback, useContext, useEffect, useState} from "react";
-import {API_URL} from "../../shared/config.ts";
 import {ReactNode} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import axios from "axios";
@@ -24,7 +23,6 @@ const AuthContext = createContext<IAuthContext>({
 
 
 export const api = axios.create({
-    baseURL: API_URL,
     headers: {
         Authorization: localStorage.getItem("accessToken")
             ? `Bearer ${localStorage.getItem("accessToken")}`
