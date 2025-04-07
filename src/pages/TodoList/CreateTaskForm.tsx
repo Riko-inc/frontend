@@ -1,28 +1,37 @@
-import {useForm} from "react-hook-form";
-import {useMutation} from "@tanstack/react-query";
+import {Controller, useForm} from "react-hook-form";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../../app/provider/AuthProvider.tsx";
+import {ITaskResponse} from "./types.ts";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns';
 
 const CreateTaskForm = () => {
 
-    interface ITask {
-        title: string;
-        description: string;
-        status: "NEW" | "IN_PROGRESS" | "COMPLETE";
-        priority: "DEFAULT" | "LOW" | "MEDIUM" | "HIGH";
-    }
+
+
+    const queryClient = useQueryClient();
 
     const {
         register,
+        control,
         handleSubmit,
         formState: {errors},
         reset,
-    } = useForm<ITask>();
+    } = useForm<ITaskResponse>();
 
     const createTaskMutation = useMutation({
-        mutationFn: (newTask: ITask) =>
-            api.post("/task/api/v1/task", newTask),
+        mutationFn: (newTask: ITaskResponse) => {
+            //если не undefined
+            const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
+            return api.post("/task/api/v1/task", {
+                ...newTask,
+                dueTo: formattedDate,
+            })
+        },
         onSuccess: (data) => {
             console.log("чел, задача создалась", data)
+            queryClient.invalidateQueries({ queryKey: ['tasks'] })
             reset()
         },
         onError: (error) => {
@@ -30,9 +39,10 @@ const CreateTaskForm = () => {
         }
     });
 
-    const onSubmit = (data: ITask) => {
+    const onSubmit = (data: ITaskResponse) => {
         console.log("createTaskMutation");
         createTaskMutation.mutate(data)
+        console.log(data)
     }
 
 
@@ -49,17 +59,13 @@ const CreateTaskForm = () => {
                 />
                 {errors.title && <div>title is wrong</div>}
                 <input
-                    {...register("description", {
-                        required: "error",
-                    })}
+                    {...register("description")}
                     //type="password"
                     placeholder="Описание"
                 />
                 {errors.description && <div>description is wrong</div>}
                 <select
-                    {...register('status', {
-                        required: 'error'
-                    })}
+                    {...register('status')}
                     defaultValue="NEW"
                     // aria-invalid={!!errors.category}
                 >
@@ -69,9 +75,7 @@ const CreateTaskForm = () => {
                 </select>
                 {errors.status && <div>status is wrong</div>}
                 <select
-                    {...register('priority', {
-                        required: 'error'
-                    })}
+                    {...register('priority')}
                     defaultValue="DEFAULT"
                     // aria-invalid={!!errors.category}
                 >
@@ -81,6 +85,29 @@ const CreateTaskForm = () => {
                     <option value="HIGH">Высокий</option>
                 </select>
                 {errors.priority && <div>priority is wrong</div>}
+                <input
+                    {...register("assignedToUserId")}
+                    // defaultValue={user?.id || ""}
+                    placeholder="ID кому назначено"
+                />
+                {errors.assignedToUserId && <div>User is wrong</div>}
+                <Controller
+                    control={control}
+                    name="dueTo"
+                    render={({ field }) => (
+                        <DatePicker
+                            selected={field.value}
+                            onChange={date => field.onChange(date)}
+                            showTimeSelect
+                            dateFormat="dd-MM-yyyy HH:mm"
+                            timeFormat="HH:mm"
+                            timeIntervals={15}
+                            className="form-control"
+                            placeholderText="Дедлайн"
+                        />
+                    )}
+                />
+                {errors.dueTo && <div>Time is wrong</div>}
                 <div>
                     <button
                         disabled={createTaskMutation.isPending}

@@ -1,38 +1,51 @@
-import {useMutation} from "@tanstack/react-query";
-import {ICreatedTask} from "./types.ts";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {ITaskResponse} from "./types.ts";
 import {api} from "../../app/provider/AuthProvider.tsx";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import {useState} from "react";
+import DatePicker from "react-datepicker";
+import {parse} from "date-fns";
 
-const EditTaskForm = ({ task }: {task: ICreatedTask}) => {
+const EditTaskForm = ({ task }: {task: ITaskResponse}) => {
 
     const [isEditing, setIsEditing] = useState(false);
+    const queryClient = useQueryClient();
 
     const {
         register,
         handleSubmit,
         formState: {errors},
-    } = useForm<ICreatedTask>();
+        control,
+        reset,
+    } = useForm<ITaskResponse>({
+        defaultValues: task,
+    });
 
     const editTaskMutation = useMutation({
-        mutationFn: (newTask: ICreatedTask) =>
-            api.put("/task/api/v1/task/" + task.taskId, {
+        mutationFn: (newTask: ITaskResponse) =>
+            api.put("/task/api/v1/task/", {
                 ...newTask,
                 taskId: task.taskId,
-            } as ICreatedTask),
+            }),
         onSuccess: () => {
             console.log("задача изменена")
             setIsEditing(false);
+            queryClient.invalidateQueries({ queryKey: ['tasks'] })
         },
         onError: (error) => {
             console.error(error);
         }
     });
 
-    const onSubmit = (data: ICreatedTask) => {
+    const onSubmit = (data: ITaskResponse) => {
         console.log("editTaskMutation");
         editTaskMutation.mutate(data)
         console.log(data)
+    }
+
+    const handleCancel = () => {
+        reset()
+        setIsEditing(false);
     }
 
     return (
@@ -40,21 +53,20 @@ const EditTaskForm = ({ task }: {task: ICreatedTask}) => {
             {!isEditing &&  <button onClick={() => setIsEditing(true)}>Изменить задачу</button>}
             {isEditing &&
                 <>
-                    <button onClick={() => setIsEditing(false)}>Отменить</button>
+                    <button onClick={handleCancel}>Отменить</button>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <input
                             {...register("title", {
                                 required: "error",
                             })}
-                            defaultValue={task.title}
+
                             placeholder="Заголовок"
                         />
                         {errors.title && <div>title is wrong</div>}
                         <input
                             {...register("description", {
-                                required: "error",
+                                // required: "error",
                             })}
-                            defaultValue={task.description}
                             //type="password"
                             placeholder="Описание"
                         />
@@ -63,7 +75,6 @@ const EditTaskForm = ({ task }: {task: ICreatedTask}) => {
                             {...register('status', {
                                 required: 'error'
                             })}
-                            defaultValue={task.status}
                             // aria-invalid={!!errors.category}
                         >
                             <option value="NEW">Новое</option>
@@ -75,7 +86,6 @@ const EditTaskForm = ({ task }: {task: ICreatedTask}) => {
                             {...register('priority', {
                                 required: 'error'
                             })}
-                            defaultValue={task.priority}
                             // aria-invalid={!!errors.category}
                         >
                             <option value="DEFAULT">Обычный</option>
@@ -84,6 +94,40 @@ const EditTaskForm = ({ task }: {task: ICreatedTask}) => {
                             <option value="HIGH">Высокий</option>
                         </select>
                         {errors.priority && <div>priority is wrong</div>}
+                        <input
+                            {...register("assignedToUserId", {
+                                required: "error",
+                            })}
+                            placeholder="ID кому назначено"
+                        />
+                        {errors.assignedToUserId && <div>User is wrong</div>}
+                        <Controller
+                            control={control}
+                            name="dueTo"
+                            // rules={{ required: "error" }}
+                            render={({ field }) => {
+                                let selectedDate = null;
+                                if (field.value) {
+                                    selectedDate =
+                                        typeof field.value === 'string'
+                                            ? parse(field.value, 'dd-MM-yyyy HH:mm', new Date())
+                                            : field.value;
+                                }
+                                return (
+                                    <DatePicker
+                                        selected={selectedDate}
+                                        onChange={date => field.onChange(date)}
+                                        showTimeSelect
+                                        dateFormat="dd-MM-yyyy HH:mm"
+                                        timeFormat="HH:mm"
+                                        timeIntervals={15}
+                                        className="form-control"
+                                        placeholderText="Дедлайн"
+                                    />
+                                );
+                            }}
+                        />
+                        {errors.dueTo && <div>Time is wrong</div>}
                         <div>
                             <button
                                 disabled={editTaskMutation.isPending}

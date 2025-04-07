@@ -1,16 +1,18 @@
-import {ICreatedTask} from "./types.ts";
-import {useMutation} from "@tanstack/react-query";
+import {ITaskResponse} from "./types.ts";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../../app/provider/AuthProvider.tsx";
 import EditTaskForm from "./EditTaskForm.tsx";
 
-const Task = ({ task }: {task: ICreatedTask}) => {
+const Task = ({ task }: {task: ITaskResponse}) => {
 
+    const queryClient = useQueryClient();
 
     const deleteTaskMutation = useMutation({
         mutationFn: () =>
             api.delete("/task/api/v1/task/" + task.taskId),
         onSuccess: () => {
             console.log("задача удалена")
+            queryClient.invalidateQueries({ queryKey: ['tasks'] })
         },
         onError: (error) => {
             console.error(error);

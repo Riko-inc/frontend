@@ -13,9 +13,13 @@
   "dependencies": {
     "@tanstack/react-query": "^5.69.0",
     "@tanstack/react-query-devtools": "^5.69.2",
+    "@types/react-datepicker": "^6.2.0",
     "@types/react-jss": "^8.6.4",
     "axios": "^1.8.4",
+    "date-fns": "^4.1.0",
+    "jwt-decode": "^4.0.0",
     "react": "^19.0.0",
+    "react-datepicker": "^8.2.1",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
     "react-jss": "^10.10.0",

@@ -1,24 +1,32 @@
 import {useNavigate} from "react-router-dom";
 import CreateTaskForm from "./CreateTaskForm.tsx";
 import {useQuery} from "@tanstack/react-query";
-import {api} from "../../app/provider/AuthProvider.tsx";
-import {ICreatedTask} from "./types.ts";
+import {api, useAuth} from "../../app/provider/AuthProvider.tsx";
+import {ITaskResponse} from "./types.ts";
 import Task from "./Task.tsx";
 import {ROUTES} from "../../app/routes/Routes.tsx";
 
+interface IUser {
+    id: number
+    email: string
+    role: string
+    registrationDateTime: string
+}
 
 const TodoList = () => {
 
+    const { userId } = useAuth()
     const navigate = useNavigate();
 
 
-    const {data: tasks, isLoading, isError} = useQuery<ICreatedTask[]>({
+    const {data: tasks, isLoading, isError} = useQuery<ITaskResponse[]>({
         queryKey: ['tasks'],
         queryFn: () =>
-            api.get<ICreatedTask[]>("/task/api/v1/task/tasks")
+            api.get<ITaskResponse[]>(`/task/api/v1/tasks/${userId}`)
                 .then((res) => res.data),
-
+        enabled: !!userId
     })
+    
 
     return (
         <>
@@ -28,7 +36,7 @@ const TodoList = () => {
             <CreateTaskForm />
 
             <p>Список задач</p>
-            {/*tasks.length > 0*/}
+            <button onClick={() => console.log(tasks)}>Задачи</button>
             {tasks && tasks.map((task) =>
                 <Task key={task.taskId} task={task} />
             )}

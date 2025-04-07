@@ -5,23 +5,23 @@ import {useQueryClient} from "@tanstack/react-query";
 import axios from "axios";
 import {IJwtTokens} from "../../pages/Login/types.ts";
 import {ROUTES} from "../routes/Routes.tsx";
+import {jwtDecode} from "jwt-decode";
 
 
 interface IAuthContext {
     setTokens: (tokens: { accessToken: string; refreshToken: string }) => void;
     clearTokens: () => void;
     isAuthenticated: boolean;
+    userId: number | null;
 }
 
 const AuthContext = createContext<IAuthContext>({
     setTokens: () => {},
     clearTokens: () => {},
-    isAuthenticated: false
+    isAuthenticated: false,
+    userId: null,
 });
 
-interface AuthProviderProps {
-    children: ReactNode;
-}
 
 export const api = axios.create({
     baseURL: API_URL,
@@ -32,11 +32,25 @@ export const api = axios.create({
     }
 });
 
+interface AuthProviderProps {
+    children: ReactNode;
+}
+
+interface IJwtDecodedUser {
+    id: number
+    email: string
+    role: "USER" | "ADMIN"
+    tokenType: "ACCESS" | "REFRESH"
+    expires: number
+}
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
     const queryClient = useQueryClient();
     const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem("accessToken"));
     const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem("refreshToken"));
+
+    const [userId, setUserId] = useState<number | null>(null);
+
 
     const setTokens = useCallback(({ accessToken, refreshToken }: IJwtTokens) => {
         localStorage.setItem('accessToken', accessToken);
@@ -64,11 +78,24 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         setTokens,
         clearTokens,
         isAuthenticated: !!accessToken,
+        userId,
     };
+
+    useEffect(() => {
+        if (accessToken && !userId) {
+            try {
+                const user: IJwtDecodedUser = jwtDecode(accessToken);
+                setUserId(user.id);
+                console.log("user", user.id);
+            } catch (error) {
+                console.error('Ошибка декодирования JWT токена:', error);
+            }
+        }
+    }, [accessToken, userId]);
+
 
 
     useEffect(() => {
-
         const requestInterceptor = api.interceptors.request.use(config => {
             const token = localStorage.getItem('accessToken');
             if (token) {
