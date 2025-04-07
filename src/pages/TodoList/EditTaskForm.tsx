@@ -4,7 +4,8 @@ import {api} from "../../app/provider/AuthProvider.tsx";
 import {Controller, useForm} from "react-hook-form";
 import {useState} from "react";
 import DatePicker from "react-datepicker";
-import {parse} from "date-fns";
+import {format, parse} from "date-fns";
+import {API_ENDPOINTS} from "../../shared/config.ts";
 
 const EditTaskForm = ({ task }: {task: ITaskResponse}) => {
 
@@ -22,11 +23,14 @@ const EditTaskForm = ({ task }: {task: ITaskResponse}) => {
     });
 
     const editTaskMutation = useMutation({
-        mutationFn: (newTask: ITaskResponse) =>
-            api.put("/task/api/v1/task/", {
+        mutationFn: (newTask: ITaskResponse) => {
+            const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
+            return api.put(API_ENDPOINTS.EDIT_TASK, {
                 ...newTask,
                 taskId: task.taskId,
-            }),
+                dueTo: formattedDate,
+            })
+        },
         onSuccess: () => {
             console.log("задача изменена")
             setIsEditing(false);
@@ -64,17 +68,13 @@ const EditTaskForm = ({ task }: {task: ITaskResponse}) => {
                         />
                         {errors.title && <div>title is wrong</div>}
                         <input
-                            {...register("description", {
-                                // required: "error",
-                            })}
+                            {...register("description")}
                             //type="password"
                             placeholder="Описание"
                         />
                         {errors.description && <div>description is wrong</div>}
                         <select
-                            {...register('status', {
-                                required: 'error'
-                            })}
+                            {...register('status')}
                             // aria-invalid={!!errors.category}
                         >
                             <option value="NEW">Новое</option>
@@ -83,9 +83,7 @@ const EditTaskForm = ({ task }: {task: ITaskResponse}) => {
                         </select>
                         {errors.status && <div>status is wrong</div>}
                         <select
-                            {...register('priority', {
-                                required: 'error'
-                            })}
+                            {...register('priority')}
                             // aria-invalid={!!errors.category}
                         >
                             <option value="DEFAULT">Обычный</option>
@@ -95,16 +93,13 @@ const EditTaskForm = ({ task }: {task: ITaskResponse}) => {
                         </select>
                         {errors.priority && <div>priority is wrong</div>}
                         <input
-                            {...register("assignedToUserId", {
-                                required: "error",
-                            })}
+                            {...register("assignedToUserId")}
                             placeholder="ID кому назначено"
                         />
                         {errors.assignedToUserId && <div>User is wrong</div>}
                         <Controller
                             control={control}
                             name="dueTo"
-                            // rules={{ required: "error" }}
                             render={({ field }) => {
                                 let selectedDate = null;
                                 if (field.value) {

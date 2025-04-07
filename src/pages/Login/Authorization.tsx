@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 import {IUser} from "./types.ts";
 import {useMutation} from "@tanstack/react-query";
 import {ROUTES} from "../../app/routes/Routes.tsx";
+import {API_ENDPOINTS} from "../../shared/config.ts";
 
 const Authorization = () => {
 
@@ -19,7 +20,7 @@ const Authorization = () => {
 
     const sendUserMutation = useMutation({
         mutationFn: (newUser: IUser) =>
-            api.post("/auth/api/v1/auth/authenticate", {
+            api.post(API_ENDPOINTS.LOGIN, {
                 email: newUser.email,
                 password: newUser.password,
             }),

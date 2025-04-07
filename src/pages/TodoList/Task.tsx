@@ -2,6 +2,7 @@ import {ITaskResponse} from "./types.ts";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../../app/provider/AuthProvider.tsx";
 import EditTaskForm from "./EditTaskForm.tsx";
+import {API_ENDPOINTS} from "../../shared/config.ts";
 
 const Task = ({ task }: {task: ITaskResponse}) => {
 
@@ -9,7 +10,7 @@ const Task = ({ task }: {task: ITaskResponse}) => {
 
     const deleteTaskMutation = useMutation({
         mutationFn: () =>
-            api.delete("/task/api/v1/task/" + task.taskId),
+            api.delete(`${API_ENDPOINTS.DELETE_TASK}/${task.taskId}`),
         onSuccess: () => {
             console.log("задача удалена")
             queryClient.invalidateQueries({ queryKey: ['tasks'] })

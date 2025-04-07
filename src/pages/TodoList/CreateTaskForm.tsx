@@ -5,6 +5,7 @@ import {ITaskResponse} from "./types.ts";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
+import {API_ENDPOINTS} from "../../shared/config.ts";
 
 const CreateTaskForm = () => {
 
@@ -22,9 +23,8 @@ const CreateTaskForm = () => {
 
     const createTaskMutation = useMutation({
         mutationFn: (newTask: ITaskResponse) => {
-            //если не undefined
             const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
-            return api.post("/task/api/v1/task", {
+            return api.post(API_ENDPOINTS.CREATE_TASK, {
                 ...newTask,
                 dueTo: formattedDate,
             })

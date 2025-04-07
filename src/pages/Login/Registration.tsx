@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom";
 import {IUser} from "./types.ts";
 import {useMutation} from "@tanstack/react-query";
 import {ROUTES} from "../../app/routes/Routes.tsx";
+import {API_ENDPOINTS} from "../../shared/config.ts";
 
 
 const Registration = () => {
@@ -21,7 +22,7 @@ const Registration = () => {
 
     const sendUserMutation = useMutation({
         mutationFn: (newUser: IUser) =>
-            api.post("/auth/api/v1/auth/register", {
+            api.post(API_ENDPOINTS.SIGNUP, {
                 email: newUser.email,
                 password: newUser.password,
             }),

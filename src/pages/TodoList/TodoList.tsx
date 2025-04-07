@@ -5,13 +5,7 @@ import {api, useAuth} from "../../app/provider/AuthProvider.tsx";
 import {ITaskResponse} from "./types.ts";
 import Task from "./Task.tsx";
 import {ROUTES} from "../../app/routes/Routes.tsx";
-
-interface IUser {
-    id: number
-    email: string
-    role: string
-    registrationDateTime: string
-}
+import {API_ENDPOINTS} from "../../shared/config.ts";
 
 const TodoList = () => {
 
@@ -19,10 +13,10 @@ const TodoList = () => {
     const navigate = useNavigate();
 
 
-    const {data: tasks, isLoading, isError} = useQuery<ITaskResponse[]>({
+    const {data: tasks} = useQuery<ITaskResponse[]>({
         queryKey: ['tasks'],
         queryFn: () =>
-            api.get<ITaskResponse[]>(`/task/api/v1/tasks/${userId}`)
+            api.get<ITaskResponse[]>(`${API_ENDPOINTS.GET_TASKS}/${userId}`)
                 .then((res) => res.data),
         enabled: !!userId
     })
