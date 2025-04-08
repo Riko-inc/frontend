@@ -58,11 +58,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     }, []);
 
     const clearTokens = useCallback(() => {
+        queryClient.clear();
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         setAccessToken(null);
         setRefreshToken(null);
-        queryClient.clear();
+        setUserId(null)
     }, []);
 
     const getNewTokens = useCallback(async () => {
