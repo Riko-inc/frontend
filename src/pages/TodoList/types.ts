@@ -1,8 +1,8 @@
 export interface ITaskRequest {
     title: string
     description: string
-    status: "NEW" | "IN_PROGRESS" | "COMPLETE",
-    priority: "DEFAULT" | "LOW" | "MEDIUM" | "HIGH",
+    status: TStatus,
+    priority: TPriority,
     assignedToUserId: string
     dueTo: Date | null
 }
@@ -14,8 +14,12 @@ export interface ITaskResponse {
     title: string,
     description: string,
     dueTo: Date,
-    status: "NEW" | "IN_PROGRESS" | "COMPLETE",
-    priority: "DEFAULT" | "LOW" | "MEDIUM" | "HIGH",
+    status: TStatus,
+    priority: TPriority,
     createdDate: string
 }
+
+export type TStatus = "NEW" | "IN_PROGRESS" | "COMPLETE"
+export type TPriority = "DEFAULT" | "LOW" | "MEDIUM" | "HIGH"
+
 

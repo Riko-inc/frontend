@@ -20,8 +20,6 @@ const TaskDefaultValues: ITaskRequest = {
     dueTo: null,
 }
 
-
-
 const CreateTaskForm = () => {
 
     const queryClient = useQueryClient();
