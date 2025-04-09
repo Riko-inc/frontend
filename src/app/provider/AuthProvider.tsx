@@ -99,7 +99,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         const requestInterceptor = api.interceptors.request.use(config => {
             const token = localStorage.getItem('accessToken');
             if (token) {
-                console.log("bearer");
+                // console.log("bearer");
                 config.headers.Authorization = `Bearer ${token}`;
             }
             return config;
