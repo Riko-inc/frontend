@@ -1,6 +1,6 @@
 const API_URL: string = "http://82.202.138.236:31064";
 
-const authService: string = API_URL + "/api/v1/auth"
+const authService: string = API_URL + "/auth/api/v1"
 const taskService: string = API_URL + "/task/api/v1"
 
 

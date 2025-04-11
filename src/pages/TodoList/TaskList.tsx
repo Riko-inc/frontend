@@ -1,10 +1,11 @@
-import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery} from "@tanstack/react-query";
 import {ITaskResponse, TPriority, TStatus} from "./types.ts";
 import {api, useAuth} from "../../app/provider/AuthProvider.tsx";
 import {API_ENDPOINTS} from "../../shared/config.ts";
 import Task from "./Task.tsx";
 import {useForm} from "react-hook-form";
-import {useEffect, useRef, useState} from "react";
+import {useEffect} from "react";
+import {useInView} from "react-intersection-observer";
 
 interface IFilterValues {
     status: TStatus | "",
@@ -16,82 +17,74 @@ const DefaultFilterValues: IFilterValues = {
     priority: "",
 }
 
-const TASKS_PER_PAGE: number = 3;
+interface IDataResponse {
+    pageParam: number[],
+    pages: ITaskResponse[][]
+}
+
+const TASKS_PER_PAGE: number = 4;
 
 const TaskList = () => {
 
     const { userId } = useAuth()
 
-    const { register, handleSubmit, formState: {errors}} = useForm<IFilterValues>({
+    const { register, watch, formState: {errors}} = useForm<IFilterValues>({
         defaultValues: DefaultFilterValues
     });
 
-    const [filters, setFilters] = useState<IFilterValues>(DefaultFilterValues);
+    const filters = watch();
 
+    const { ref, inView } = useInView();
 
     const fetchTasks =
-        async ({ pageParam }: { pageParam: number }): Promise<ITaskResponse[]> => {
-        const { data } = await api.get<ITaskResponse[]>(`${API_ENDPOINTS.GET_TASKS}/${userId}`, {
+        async ({ pageParam, queryKey }: { pageParam?: number; queryKey: [string, IFilterValues] }): Promise<ITaskResponse[]> => {
+        const [, filters] = queryKey
+        const response =
+            await api.get<ITaskResponse[]>(`${API_ENDPOINTS.GET_TASKS}/${userId}`, {
             params: {
                 page: pageParam,
                 size: TASKS_PER_PAGE,
-                status: filters.status,
-                priority: filters.priority,
+                ...filters
             }
         })
-        console.log(data)
-        return data
+            console.log(response.data)
+        return response.data
     }
 
     const {
         data,
         error,
-        isFetchingNextPage,
         fetchNextPage,
         hasNextPage,
-    } = useInfiniteQuery<ITaskResponse[]>({
+        isFetchingNextPage,
+    } = useInfiniteQuery<ITaskResponse[], Error, IDataResponse, [string, IFilterValues], number>({
         queryKey: ["tasks", filters],
         queryFn: fetchTasks,
         enabled: !!userId,
         initialPageParam: 0,
-        getNextPageParam: (lastPage, allPages) =>
-            lastPage.length === TASKS_PER_PAGE ? allPages.length : undefined
+        getNextPageParam: (lastPage, allPages) => {
+            return lastPage.length < (TASKS_PER_PAGE - 1) ? undefined : allPages.length;
+        }
     })
 
-    const loadMoreRef = useRef<HTMLDivElement>(null);
+    console.log(isFetchingNextPage)
 
     useEffect(() => {
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && hasNextPage) {
-                fetchNextPage();
-            }
-        }, { threshold: 0.1 });
-
-        if (loadMoreRef.current) {
-            observer.observe(loadMoreRef.current);
+        if (inView && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage();
         }
+    }, [inView, hasNextPage, fetchNextPage, isFetchingNextPage]);
 
-        return () => {
-            if (loadMoreRef.current) {
-                observer.unobserve(loadMoreRef.current);
-            }
-            observer.disconnect()
-        };
-    }, [hasNextPage, fetchNextPage]);
 
-    const onSubmit = (data: IFilterValues) => {
-        setFilters(data)
-    }
-
+    if (error) return <div>Ошибка: {error.message}</div>;
 
     return (
         <>
             <p>Фильтры</p>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form>
                 <select
                     {...register('status')}
-                    onChange={() => handleSubmit(onSubmit)()}
                     // aria-invalid={!!errors.category}
                 >
                     <option value="">Без фильтра</option>
@@ -102,7 +95,6 @@ const TaskList = () => {
                 {errors.status && <div>status is wrong</div>}
                 <select
                     {...register('priority')}
-                    onChange={() => handleSubmit(onSubmit)()}
                     // aria-invalid={!!errors.category}
                 >
                     <option value="">Без фильтра</option>
@@ -117,20 +109,26 @@ const TaskList = () => {
 
             <p>Список задач</p>
             <button onClick={() => console.log(filters)}>Фильтры</button>
+            <button onClick={() => console.log(data)}>data</button>
+            <button onClick={() => console.log({
+                "inView": inView,
+                "hasNextPage": hasNextPage,
+                "isFetchingNextPage": isFetchingNextPage,
+            })}>params</button>
 
-            {data?.pages.map((page, pageIndex) => (
-                <div key={`page-${pageIndex}`}>
-                    {page.map((task) => (
-                        <Task key={task.taskId} task={task} />
-                    ))}
+
+            {data?.pages?.flat().map((task) => (
+                <div key={task.taskId}>
+                    <Task task={task} />
                 </div>
             ))}
-            {error && <div>Ошибка загрузки: {error.message}</div>}
 
-            <div ref={loadMoreRef} style={{ height: "1px" }} />
 
-            {isFetchingNextPage && <p>Загрузка...</p>}
-            {!hasNextPage && <p>Больше задач нет</p>}
+            <div ref={ref}>
+                {isFetchingNextPage ? 'Загрузка...' : hasNextPage ? 'Прокрутите вниз' : 'Все задачи загружены'}
+            </div>
+
+            {/*<div ref={loadMoreRef} style={{ height: "1px" }} />*/}
         </>
     )
 }
