@@ -22,7 +22,7 @@ interface IDataResponse {
     pages: ITaskResponse[][]
 }
 
-const TASKS_PER_PAGE: number = 4;
+const TASKS_PER_PAGE: number = 3;
 
 const TaskList = () => {
 
@@ -39,6 +39,7 @@ const TaskList = () => {
     const fetchTasks =
         async ({ pageParam, queryKey }: { pageParam?: number; queryKey: [string, IFilterValues] }): Promise<ITaskResponse[]> => {
         const [, filters] = queryKey
+            console.log("запрос")
         const response =
             await api.get<ITaskResponse[]>(`${API_ENDPOINTS.GET_TASKS}/${userId}`, {
             params: {
@@ -63,11 +64,12 @@ const TaskList = () => {
         enabled: !!userId,
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
-            return lastPage.length < (TASKS_PER_PAGE - 1) ? undefined : allPages.length;
+            return lastPage.length < TASKS_PER_PAGE ? undefined : allPages.length;
         }
     })
 
-    console.log(isFetchingNextPage)
+    console.log("isFetchingNextPage", isFetchingNextPage)
+    // console.log("isLoading", isLoading)
 
     useEffect(() => {
         if (inView && hasNextPage && !isFetchingNextPage) {
