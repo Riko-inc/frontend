@@ -11,7 +11,7 @@ import {useUsers} from "./lib.ts";
 import {useState} from "react";
 
 
-const TaskDefaultValues: ITaskRequest = {
+const DefaultTaskValues: ITaskRequest = {
     title: "",
     description: "",
     status: "NEW",
@@ -19,8 +19,6 @@ const TaskDefaultValues: ITaskRequest = {
     assignedToUserId: "",
     dueTo: null,
 }
-
-
 
 const CreateTaskForm = () => {
 
@@ -36,7 +34,7 @@ const CreateTaskForm = () => {
         formState: {errors},
         reset,
     } = useForm<ITaskRequest>({
-        defaultValues: TaskDefaultValues,
+        defaultValues: DefaultTaskValues,
     });
 
     const createTaskMutation = useMutation({

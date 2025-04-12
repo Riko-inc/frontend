@@ -4,9 +4,10 @@ import {RouteForNotAuthenticated} from "./RouteForNotAuthenticated.tsx";
 import Authorization from "../../pages/Login/Authorization.tsx";
 import Registration from "../../pages/Login/Registration.tsx";
 import Main from "../../pages/Main/Main.tsx";
-import TodoList from "../../pages/TodoList/TodoList.tsx";
+
 import Page404 from "../../pages/Page404/Page404.tsx";
 import TokenTestPage from "../../pages/Main/TokenTestPage.tsx";
+import TodoList from "../../pages/TodoList/TodoList.tsx";
 
 
 const envVar: string = "/frontend"
