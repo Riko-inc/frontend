@@ -6,15 +6,20 @@ import Task from "./Task.tsx";
 import {useForm} from "react-hook-form";
 import {useEffect} from "react";
 import {useInView} from "react-intersection-observer";
+import {useUsers} from "./lib.ts";
 
 interface IFilterValues {
     status: TStatus[],
-    priority: TPriority[]
+    priority: TPriority[],
+    assignedToUserId: string,
+    createdByUserId: string,
 }
 
 const DefaultFilterValues: IFilterValues = {
     status: [],
     priority: [],
+    assignedToUserId: "",
+    createdByUserId: ""
 }
 
 interface IDataResponse {
@@ -27,8 +32,9 @@ const TASKS_PER_PAGE: number = 3;
 const TaskList = () => {
 
     const { userId } = useAuth()
+    const {data: users} = useUsers()
 
-    const { register, watch} = useForm<IFilterValues>({
+    const { register, watch } = useForm<IFilterValues>({
         defaultValues: DefaultFilterValues
     });
 
@@ -51,6 +57,8 @@ const TaskList = () => {
                 size: TASKS_PER_PAGE,
                 ...(filters.status?.length ? { status: filters.status.join(',') } : {}),
                 ...(filters.priority?.length ? { priority: filters.priority.join(',') } : {}),
+                ...(filters.assignedToUserId?.length ? { assignedToUserId: filters.assignedToUserId } : {}),
+                ...(filters.createdByUserId?.length ? { createdByUserId: filters.createdByUserId } : {}),
             }
         })
             console.log(response.data)
@@ -125,28 +133,32 @@ const TaskList = () => {
                         Высокий
                     </label>
                 </fieldset>
-
-                {/*<select*/}
-                {/*    {...register('status')}*/}
-                {/*    // aria-invalid={!!errors.category}*/}
-                {/*>*/}
-                {/*    <option value="">Без фильтра</option>*/}
-                {/*    <option value="NEW">Новое</option>*/}
-                {/*    <option value="IN_PROGRESS">В работе</option>*/}
-                {/*    <option value="COMPLETE">Выполнено</option>*/}
-                {/*</select>*/}
-                {/*{errors.status && <div>status is wrong</div>}*/}
-                {/*<select*/}
-                {/*    {...register('priority')}*/}
-                {/*    // aria-invalid={!!errors.category}*/}
-                {/*>*/}
-                {/*    <option value="">Без фильтра</option>*/}
-                {/*    <option value="DEFAULT">Обычный</option>*/}
-                {/*    <option value="LOW">Низкий</option>*/}
-                {/*    <option value="MEDIUM">Средний</option>*/}
-                {/*    <option value="HIGH">Высокий</option>*/}
-                {/*</select>*/}
-                {/*{errors.priority && <div>priority is wrong</div>}*/}
+                <fieldset>
+                    <legend>Кому назначили</legend>
+                    <label>
+                        <input type="radio" value="" {...register('assignedToUserId')} />
+                        Без фильтра
+                    </label>
+                    {users && users.map((user) => (
+                        <label>
+                            <input type="radio" value={user.id} key={user.id} {...register('assignedToUserId')} />
+                            Пользователь {user.id}
+                        </label>
+                    ))}
+                </fieldset>
+                <fieldset>
+                    <legend>Кто автор</legend>
+                    <label>
+                        <input type="radio" value="" {...register('createdByUserId')} />
+                        Без фильтра
+                    </label>
+                    {users && users.map((user) => (
+                        <label>
+                            <input type="radio" value={user.id} key={user.id} {...register('createdByUserId')} />
+                            Пользователь {user.id}
+                        </label>
+                    ))}
+                </fieldset>
             </form>
 
 
