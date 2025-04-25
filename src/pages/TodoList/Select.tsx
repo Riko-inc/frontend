@@ -1,5 +1,5 @@
 import * as RadixSelect from "@radix-ui/react-select";
-import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
+import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { createUseStyles } from "react-jss";
 import {flexCenter} from "../../shared/styles/mixins.ts";
 import {ITheme} from "../../shared/styles/themes.ts";
@@ -75,7 +75,7 @@ const Select: FC<SelectProps> = ({name, currentValue, values}) => {
         <RadixSelect.Root defaultValue={currentValue}>
 
             <RadixSelect.Trigger className={classes.Trigger}>
-                <RadixSelect.Value placeholder="placeholder" />
+                <RadixSelect.Value placeholder="Чо?" />
                 <RadixSelect.Icon className={classes.Icon}>
                     <ChevronDownIcon />
                 </RadixSelect.Icon>
@@ -87,10 +87,10 @@ const Select: FC<SelectProps> = ({name, currentValue, values}) => {
                         <RadixSelect.Group>
                             <RadixSelect.Label className={classes.Label}>{name}</RadixSelect.Label>
 
-                            {Object.entries(values).map(([valueKey, valueLabel]) => (
-                                <div key={valueKey}>
-                                    <RadixSelect.Item className={classes.Item} value={valueKey}>
-                                        <RadixSelect.ItemText>{valueLabel}</RadixSelect.ItemText>
+                            {Object.entries(values).map(([optionValue, optionLabel]) => (
+                                <div key={optionValue}>
+                                    <RadixSelect.Item className={classes.Item} value={optionValue}>
+                                        <RadixSelect.ItemText>{optionLabel}</RadixSelect.ItemText>
                                         <RadixSelect.ItemIndicator className={classes.ItemIndicator}>
                                             <CheckIcon />
                                         </RadixSelect.ItemIndicator>

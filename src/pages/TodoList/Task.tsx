@@ -8,6 +8,7 @@ import {ITheme} from "../../shared/styles/themes.ts";
 import {flexRow} from "../../shared/styles/mixins.ts";
 import Select from "./Select.tsx";
 import {useUsers} from "./lib.ts";
+import Button from "../../shared/ui/Button.tsx";
 
 
 
@@ -83,6 +84,8 @@ const Task = ({ task }: {task: ITaskResponse}) => {
             COMPLETE: "Выполненные"
     }
     const {data: users} = useUsers()
+    const usersMap = users ? Object.fromEntries([...users.map(user =>
+            [String(user.id), `Чел №${user.id}`]), ["null", "Без жертвы"]]) : undefined
 
 
     return (
@@ -92,9 +95,12 @@ const Task = ({ task }: {task: ITaskResponse}) => {
                 <span className={classes.title}>{task.title}</span>
             </div>
             <div className={classes.row}>
-                <Select values={status} name={"status"} currentValue="NEW"/>
-                <Select values={priority} name={"priority"} currentValue="DEFAULT"/>
+                <Select values={status} name={"status"} currentValue={task.status} />
+                <Select values={priority} name={"priority"} currentValue={task.priority} />
+                {usersMap && <Select values={usersMap} name={"assignedToUserId"}
+                    currentValue={task.assignedToUserId ? task.assignedToUserId : "null"} />}
                 <button onClick={() => deleteTask()}>Удалить задачу</button>
+                <Button fontSize="16px" onClick={() => deleteTask()}>Удалить</Button>
             </div>
 
 

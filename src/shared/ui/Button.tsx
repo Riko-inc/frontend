@@ -50,7 +50,7 @@ const Button: FC<ButtonProps> = ({children, minWidth, fontSize, ...props}) => {
 
     return (
         <>
-            <HeadlessButton className={classes.button} {...props}>{children}</HeadlessButton>
+            <button className={classes.button} {...props}>{children}</button>
         </>
     );
 };
