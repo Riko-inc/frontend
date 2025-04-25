@@ -1,6 +1,6 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {ITaskResponse} from "./types.ts";
-import {api} from "../../app/provider/AuthProvider.tsx";
+import {ITaskResponse} from "../../shared/types.ts";
+import {api} from "../../app/contexts/AuthContext.tsx";
 import {Controller, useForm} from "react-hook-form";
 import {useState} from "react";
 import DatePicker from "react-datepicker";

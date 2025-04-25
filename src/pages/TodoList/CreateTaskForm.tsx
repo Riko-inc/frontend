@@ -1,7 +1,7 @@
 import {Controller, useForm} from "react-hook-form";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {api} from "../../app/provider/AuthProvider.tsx";
-import {ITaskRequest} from "./types.ts";
+import {api} from "../../app/contexts/AuthContext.tsx";
+import {ITaskRequest} from "../../shared/types.ts";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
