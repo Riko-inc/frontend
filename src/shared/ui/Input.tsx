@@ -1,4 +1,3 @@
-import { Input as HeadlessInput } from "@headlessui/react"
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../styles/themes.ts";
 import {FC} from "react";
@@ -38,6 +37,8 @@ const useStyles = createUseStyles((theme: ITheme) => ({
             margin: theme.spacing.sm,
             padding: `${verticalPadding} ${horizontalPadding}`,
             minWidth: minWidth || "fit-content",
+            fontFamily: theme.typography.fontFamily,
+            fontWeight: theme.typography.fontWeight,
         }
     }
 }));
@@ -56,7 +57,7 @@ const Input: FC<InputProps> = ({placeholder, fontSize, minWidth, name, required}
 
     return (
         <>
-            <HeadlessInput
+            <input
                 className={classes.input}
                 placeholder={placeholder}
                 {...register(name, {required})}/>

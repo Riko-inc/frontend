@@ -2,14 +2,15 @@ import {ITaskResponse} from "../../shared/types.ts";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../../app/contexts/AuthContext.tsx";
 import {API_ENDPOINTS} from "../../shared/config.ts";
-import {useState} from "react";
+import {useEffect} from "react";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import {flexRow} from "../../shared/styles/mixins.ts";
 import Select from "./Select.tsx";
 import {useUsers} from "./lib.ts";
 import Button from "../../shared/ui/Button.tsx";
-
+import {FormProvider, useForm, useWatch} from "react-hook-form";
+import TaskDialog from "./TaskDialog.tsx";
 
 
 const useStyles = createUseStyles((theme: ITheme) => ({
@@ -48,7 +49,23 @@ const useStyles = createUseStyles((theme: ITheme) => ({
 const Task = ({ task }: {task: ITaskResponse}) => {
     const classes = useStyles();
     const queryClient = useQueryClient();
-    const [error, setError] = useState(false)
+
+    const formattedTask = {
+        ...task,
+        assignedToUserId: task.assignedToUserId ? task.assignedToUserId : "null",
+    }
+
+    const mainForm = useForm<ITaskResponse>({
+        defaultValues: formattedTask,
+    })
+    const formValues = useWatch({ control: mainForm.control });
+    // const [error, setError] = useState(false)
+
+    useEffect(() => {
+        if (formValues) {
+            // запрос
+        }
+    }, [formValues]);
 
     const deleteTaskMutation = useMutation({
         mutationFn: () =>
@@ -59,11 +76,6 @@ const Task = ({ task }: {task: ITaskResponse}) => {
         },
         onError: (error) => {
             console.error(error);
-            setError(true);
-            const timer = setTimeout(() => {
-                setError(false);
-                clearTimeout(timer);
-            }, 20000);
         }
     });
 
@@ -84,44 +96,28 @@ const Task = ({ task }: {task: ITaskResponse}) => {
             COMPLETE: "Выполненные"
     }
     const {data: users} = useUsers()
-    const usersMap = users ? Object.fromEntries([...users.map(user =>
-            [String(user.id), `Чел №${user.id}`]), ["null", "Без жертвы"]]) : undefined
+    const usersMap = users ? Object.fromEntries([["null", "Без жертвы"], ...users.map(user =>
+            [String(user.id), `Чел №${user.id}`])]) : undefined
 
 
     return (
-        <div className={classes.taskContainer}>
-            <div className={classes.row}>
-                <p className={classes.number}>DEV-1</p>
-                <span className={classes.title}>{task.title}</span>
+        <FormProvider {...mainForm}>
+            <div className={classes.taskContainer}>
+                <div className={classes.row}>
+                    <p className={classes.number}>DEV-1</p>
+                    <span className={classes.title}>{task.title}</span>
+                </div>
+                <div className={classes.row}>
+                    <Select values={status} name={"status"} />
+                    <Select values={priority} name={"priority"} />
+                    {usersMap && <Select values={usersMap} name={"assignedToUserId"} />}
+
+                    <TaskDialog type="Edit" task={formattedTask} />
+
+                    <Button fontSize="14px" onClick={() => deleteTask()}>Удалить</Button>
+                </div>
             </div>
-            <div className={classes.row}>
-                <Select values={status} name={"status"} currentValue={task.status} />
-                <Select values={priority} name={"priority"} currentValue={task.priority} />
-                {usersMap && <Select values={usersMap} name={"assignedToUserId"}
-                    currentValue={task.assignedToUserId ? task.assignedToUserId : "null"} />}
-                <button onClick={() => deleteTask()}>Удалить задачу</button>
-                <Button fontSize="16px" onClick={() => deleteTask()}>Удалить</Button>
-            </div>
-
-
-
-
-
-
-
-            {/*<div>------------------------------------------</div>*/}
-            {/*<div>ID {task.taskId}</div>*/}
-            {/*<div>{task.title}</div>*/}
-            {/*<div>{task.description}</div>*/}
-            {/*<div>Статус {task.status}</div>*/}
-            {/*<div>Приоритет {task.priority}</div>*/}
-            {/*<div>Кому назначено {task.assignedToUserId}</div>*/}
-            {/*<div>Автор назначил {task.createdByUserId}</div>*/}
-            {/*<div>Дата создания {task.createdDate}</div>*/}
-            {/*<EditTaskForm task={task} />*/}
-
-            {/*{error && <Image />}*/}
-        </div>
+        </FormProvider>
 
 
     )

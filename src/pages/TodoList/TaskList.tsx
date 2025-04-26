@@ -5,7 +5,6 @@ import {API_ENDPOINTS} from "../../shared/config.ts";
 import Task from "./Task.tsx";
 import {useEffect} from "react";
 import {useInView} from "react-intersection-observer";
-import {useUsers} from "./lib.ts";
 import {useAppSelector} from "../../shared/store/redux.ts";
 
 
@@ -19,7 +18,7 @@ const TASKS_PER_PAGE: number = 3;
 const TaskList = () => {
 
     const { userId } = useAuth()
-    const {data: users} = useUsers()
+    // const {data: users} = useUsers()
 
 
     const filters = useAppSelector((state) => state.filters);
@@ -36,7 +35,7 @@ const TaskList = () => {
             params: {
                 page: pageParam,
                 size: TASKS_PER_PAGE,
-                ...(filters.status?.length ? { status: filters.status.join(',') } : {}),
+                ...(filters.status?.length ? filters.status : {}),
                 ...(filters.priority?.length ? { priority: filters.priority.join(',') } : {}),
                 ...(filters.assignedToUserId?.length ? { assignedToUserId: filters.assignedToUserId } : {}),
                 ...(filters.createdByUserId?.length ? { createdByUserId: filters.createdByUserId } : {}),

@@ -5,6 +5,7 @@ import {flexCenter} from "../../shared/styles/mixins.ts";
 import {ITheme} from "../../shared/styles/themes.ts";
 import {FC} from "react";
 import {CheckIcon} from "@radix-ui/react-icons";
+import {useController, useFormContext} from "react-hook-form";
 
 const useStyles = createUseStyles((theme: ITheme) => ({
     Trigger: {
@@ -30,7 +31,7 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         border: `1px solid ${theme.colors.neutral}`,
         backgroundColor: theme.colors.background,
         borderRadius: "8px",
-        boxShadow: `0 0 5px ${theme.colors.neutral}`,
+        // boxShadow: `0 0 5px ${theme.colors.neutral}`,
         minWidth: '200px',
     },
     Viewport: {
@@ -64,18 +65,22 @@ const useStyles = createUseStyles((theme: ITheme) => ({
 
 interface SelectProps {
     name: string;
-    currentValue: string;
     values: Record<string, string>;
 }
 
-const Select: FC<SelectProps> = ({name, currentValue, values}) => {
+const Select: FC<SelectProps> = ({name, values}) => {
     const classes = useStyles();
+    const { control } = useFormContext();
+
+    const {
+        field: { onChange, value },
+    } = useController({ name, control });
 
     return (
-        <RadixSelect.Root defaultValue={currentValue}>
+        <RadixSelect.Root value={value} onValueChange={onChange}>
 
             <RadixSelect.Trigger className={classes.Trigger}>
-                <RadixSelect.Value placeholder="Чо?" />
+                <RadixSelect.Value placeholder="Placeholder" />
                 <RadixSelect.Icon className={classes.Icon}>
                     <ChevronDownIcon />
                 </RadixSelect.Icon>

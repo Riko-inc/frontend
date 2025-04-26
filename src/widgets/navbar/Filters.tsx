@@ -9,7 +9,7 @@ import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import {flexCenter} from "../../shared/styles/mixins.ts";
 import Checkbox from "../../shared/ui/Checkbox.tsx";
-import {FieldValues, FormProvider, useForm} from "react-hook-form";
+import {FormProvider, useForm} from "react-hook-form";
 import {useAppDispatch, } from "../../shared/store/redux.ts";
 import {setFilters} from "../../shared/store/filterSlice.ts";
 import {useEffect} from "react";
@@ -126,13 +126,12 @@ const Filters = () => {
 
 
     return (
-        <Popover>
-            <PopoverButton className={classes.filterButton}>Фильтры</PopoverButton>
-            <FormProvider {...methods}>
-                <PopoverPanel anchor="bottom end" className={classes.container}>
-                    {Object.entries(filtersData).map(([filterKey, options]) => (
-                        <Disclosure key={filterKey} defaultOpen={true} as="div" className={classes.itemPanel}>
-                            {({ open }) => (
+        <FormProvider {...methods}>
+            <Popover>
+                <PopoverButton className={classes.filterButton}>Фильтры</PopoverButton>
+                    <PopoverPanel anchor="bottom end" className={classes.container}>
+                        {Object.entries(filtersData).map(([filterKey, options]) => (
+                            <Disclosure key={filterKey} defaultOpen={true} as="div" className={classes.itemPanel}>
                                 <>
                                     <DisclosureButton className={classes.itemButton}>
                                         <span>{filterKey}</span>
@@ -145,12 +144,10 @@ const Filters = () => {
                                         ))}
                                     </DisclosurePanel>
                                 </>
-                            )}
-                        </Disclosure>
-                    ))}
-                    {usersLists.map((title) => (
-                        <Disclosure defaultOpen={true} key={title} as="div">
-                            {({ open }) => (
+                            </Disclosure>
+                        ))}
+                        {usersLists.map((title) => (
+                            <Disclosure defaultOpen={true} key={title} as="div">
                                 <>
                                     <DisclosureButton className={classes.itemButton}>
                                         <span>{title}</span>
@@ -165,12 +162,11 @@ const Filters = () => {
                                         ))}
                                     </DisclosurePanel>
                                 </>
-                            )}
-                        </Disclosure>
-                    ))}
-                </PopoverPanel>
-            </FormProvider>
-        </Popover>
+                            </Disclosure>
+                        ))}
+                    </PopoverPanel>
+            </Popover>
+        </FormProvider>
     );
 };
 

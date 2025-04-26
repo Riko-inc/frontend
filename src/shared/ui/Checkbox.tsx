@@ -1,11 +1,9 @@
-import { MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
-import { MdOutlineCheckBox } from "react-icons/md";
-import { Checkbox as HeadlessCheckbox } from "@headlessui/react"
+
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../styles/themes.ts";
 import {flexCenter} from "../styles/mixins.ts";
 import {FC} from "react";
-import {Controller, useFormContext} from "react-hook-form";
+import {useFormContext} from "react-hook-form";
 
 const useStyles = createUseStyles((theme: ITheme) => ({
     checkbox: {

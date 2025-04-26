@@ -70,7 +70,6 @@ const CreateTaskForm = () => {
 
     return (
         <>
-            <p>Новая задача</p>
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <input

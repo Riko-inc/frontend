@@ -6,8 +6,7 @@ import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
 import Routes from "./routes/Routes.tsx"
 import {ThemeProvider} from "react-jss";
-import {useState} from "react";
-import {ITheme, lightTheme} from "../shared/styles/themes.ts";
+import {lightTheme} from "../shared/styles/themes.ts";
 import {useGlobalStyles} from "../shared/styles/globalStyles.ts";
 import {Provider} from "react-redux";
 import {setupStore} from "../shared/store/store.ts";
@@ -33,17 +32,19 @@ const queryClient = new QueryClient({
 
 function App() {
 
-    const [currentTheme, setCurrentTheme] = useState<ITheme>(lightTheme);
-    useGlobalStyles({ theme: currentTheme });
+    // const [currentTheme, setCurrentTheme] = useState<ITheme>(lightTheme);
+    useGlobalStyles({ theme: lightTheme });
 
     const store = setupStore()
+
+
 
     return (
         <QueryClientProvider client={queryClient}>
             <Provider store={store}>
                 <AuthProvider>
                     <Theme>
-                        <ThemeProvider theme={currentTheme}>
+                        <ThemeProvider theme={lightTheme}>
                             <Routes />
                         </ThemeProvider>
                     </Theme>

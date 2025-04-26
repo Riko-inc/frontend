@@ -4,7 +4,9 @@ import {ITheme} from "../../shared/styles/themes.ts";
 import { CgProfile } from "react-icons/cg";
 import { TbGridDots } from "react-icons/tb";
 import Filters from "./Filters.tsx";
-import FilterBar from "./FilterBar.tsx";
+import TaskDialog from "../../pages/TodoList/TaskDialog.tsx";
+import {ROUTES} from "../../app/routes/Routes.tsx";
+import {useNavigate} from "react-router-dom";
 
 const useStyles = createUseStyles((theme: ITheme) => ({
     container: {
@@ -30,10 +32,11 @@ const useStyles = createUseStyles((theme: ITheme) => ({
     }
 }));
 
-//9 точек, навзвание, три иконки, фильтры, профиль
+
+
 const Navbar = () => {
     const classes = useStyles();
-
+    const navigate = useNavigate();
 
     return (
         <>
@@ -45,7 +48,8 @@ const Navbar = () => {
                     <p className={classes.title}>Teapo</p>
                 </div>
                 <div className={classes.row}>
-
+                    <button onClick={() => navigate(ROUTES.MAIN)}>Вернуться на главную страницу</button>
+                    <TaskDialog type="Create" />
                     <Filters />
                     <div className={classes.icon}>
                         <CgProfile size={35} />

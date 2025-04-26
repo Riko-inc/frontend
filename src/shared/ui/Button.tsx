@@ -1,4 +1,3 @@
-import { Button as HeadlessButton } from "@headlessui/react"
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../styles/themes.ts";
 import {ButtonHTMLAttributes, FC, ReactNode} from "react";
