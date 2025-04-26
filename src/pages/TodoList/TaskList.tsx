@@ -1,26 +1,12 @@
 import {useInfiniteQuery} from "@tanstack/react-query";
-import {ITaskResponse, TPriority, TStatus} from "./types.ts";
-import {api, useAuth} from "../../app/provider/AuthProvider.tsx";
+import {IFilterValues, ITaskResponse} from "../../shared/types.ts";
+import {api, useAuth} from "../../app/contexts/AuthContext.tsx";
 import {API_ENDPOINTS} from "../../shared/config.ts";
 import Task from "./Task.tsx";
-import {useForm} from "react-hook-form";
 import {useEffect} from "react";
 import {useInView} from "react-intersection-observer";
-import {useUsers} from "./lib.ts";
+import {useAppSelector} from "../../shared/store/redux.ts";
 
-interface IFilterValues {
-    status: TStatus[],
-    priority: TPriority[],
-    assignedToUserId: string,
-    createdByUserId: string,
-}
-
-const DefaultFilterValues: IFilterValues = {
-    status: [],
-    priority: [],
-    assignedToUserId: "",
-    createdByUserId: ""
-}
 
 interface IDataResponse {
     pageParam: number[],
@@ -32,13 +18,11 @@ const TASKS_PER_PAGE: number = 3;
 const TaskList = () => {
 
     const { userId } = useAuth()
-    const {data: users} = useUsers()
+    // const {data: users} = useUsers()
 
-    const { register, watch } = useForm<IFilterValues>({
-        defaultValues: DefaultFilterValues
-    });
 
-    const filters = watch();
+    const filters = useAppSelector((state) => state.filters);
+
 
     const { ref, inView } = useInView();
 
@@ -46,16 +30,12 @@ const TaskList = () => {
         async ({ pageParam, queryKey }: { pageParam?: number; queryKey: [string, IFilterValues] }): Promise<ITaskResponse[]> => {
         const [, filters] = queryKey;
 
-        // const formattedFilters = {
-        //     status: filters.status.join(','),
-        //     priority: filters.priority.join(',')
-        // }
         const response =
             await api.get<ITaskResponse[]>(`${API_ENDPOINTS.GET_TASKS}/${userId}`, {
             params: {
                 page: pageParam,
                 size: TASKS_PER_PAGE,
-                ...(filters.status?.length ? { status: filters.status.join(',') } : {}),
+                ...(filters.status?.length ? filters.status : {}),
                 ...(filters.priority?.length ? { priority: filters.priority.join(',') } : {}),
                 ...(filters.assignedToUserId?.length ? { assignedToUserId: filters.assignedToUserId } : {}),
                 ...(filters.createdByUserId?.length ? { createdByUserId: filters.createdByUserId } : {}),
@@ -81,9 +61,6 @@ const TaskList = () => {
         }
     })
 
-    // console.log("isFetchingNextPage", isFetchingNextPage)
-    // console.log("isLoading", isLoading)
-
     useEffect(() => {
         if (inView && hasNextPage && !isFetchingNextPage) {
             fetchNextPage();
@@ -95,81 +72,14 @@ const TaskList = () => {
 
     return (
         <>
-            <p>Фильтры</p>
-
-            <form>
-
-                <fieldset>
-                    <legend>Статус</legend>
-                    <label>
-                        <input type="checkbox" value="NEW" {...register('status')} />
-                        Новое
-                    </label>
-                    <label>
-                        <input type="checkbox" value="IN_PROGRESS" {...register('status')} />
-                        В работе
-                    </label>
-                    <label>
-                        <input type="checkbox" value="COMPLETE" {...register('status')} />
-                        Выполнено
-                    </label>
-                </fieldset>
-                <fieldset>
-                    <legend>Приоритет</legend>
-                    <label>
-                        <input type="checkbox" value="DEFAULT" {...register('priority')} />
-                        Обычный
-                    </label>
-                    <label>
-                        <input type="checkbox" value="LOW" {...register('priority')} />
-                        Низкий
-                    </label>
-                    <label>
-                        <input type="checkbox" value="MEDIUM" {...register('priority')} />
-                        Средний
-                    </label>
-                    <label>
-                        <input type="checkbox" value="HIGH" {...register('priority')} />
-                        Высокий
-                    </label>
-                </fieldset>
-                <fieldset>
-                    <legend>Кому назначили</legend>
-                    <label>
-                        <input type="radio" value="" {...register('assignedToUserId')} />
-                        Без фильтра
-                    </label>
-                    {users && users.map((user) => (
-                        <label>
-                            <input type="radio" value={user.id} key={user.id} {...register('assignedToUserId')} />
-                            Пользователь {user.id}
-                        </label>
-                    ))}
-                </fieldset>
-                <fieldset>
-                    <legend>Кто автор</legend>
-                    <label>
-                        <input type="radio" value="" {...register('createdByUserId')} />
-                        Без фильтра
-                    </label>
-                    {users && users.map((user) => (
-                        <label>
-                            <input type="radio" value={user.id} key={user.id} {...register('createdByUserId')} />
-                            Пользователь {user.id}
-                        </label>
-                    ))}
-                </fieldset>
-            </form>
-
-
-            <p>Список задач</p>
-            <button onClick={() => console.log(filters)}>Фильтры</button>
-            <button onClick={() => console.log(data)}>data</button>
-            <button onClick={() => console.log({
-                "inView": inView,
-                "hasNextPage": hasNextPage,
-                "isFetchingNextPage": isFetchingNextPage,
-            })}>params</button>
+            {/*<p>Список задач</p>*/}
+            {/*<button onClick={() => console.log(filters)}>Фильтры</button>*/}
+            {/*<button onClick={() => console.log(data)}>data</button>*/}
+            {/*<button onClick={() => console.log({*/}
+            {/*    "inView": inView,*/}
+            {/*    "hasNextPage": hasNextPage,*/}
+            {/*    "isFetchingNextPage": isFetchingNextPage,*/}
+            {/*})}>params</button>*/}
 
 
             {data?.pages?.flat().map((task) => (

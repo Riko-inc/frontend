@@ -1,23 +1,21 @@
-import {useNavigate} from "react-router-dom";
-import CreateTaskForm from "./CreateTaskForm.tsx";
-import {ROUTES} from "../../app/routes/Routes.tsx";
 import TaskList from "./TaskList.tsx";
+import Navbar from "../../widgets/navbar/Navbar.tsx";
+import CreateTaskForm from "./CreateTaskForm.tsx";
 
 
 const TodoList = () => {
 
 
-    const navigate = useNavigate();
+
 
 
 
     return (
         <>
-            <div>TodoList</div>
-            <button onClick={() => navigate(ROUTES.MAIN)}>Вернуться на главную страницу</button>
+            <Navbar />
+
 
             <CreateTaskForm />
-
             <TaskList />
         </>
     )

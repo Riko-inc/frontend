@@ -14,22 +14,6 @@ interface IAuthContext {
     userId: number | null;
 }
 
-const AuthContext = createContext<IAuthContext>({
-    setTokens: () => {},
-    clearTokens: () => {},
-    isAuthenticated: false,
-    userId: null,
-});
-
-
-export const api = axios.create({
-    headers: {
-        Authorization: localStorage.getItem("accessToken")
-            ? `Bearer ${localStorage.getItem("accessToken")}`
-            : undefined
-    }
-});
-
 interface AuthProviderProps {
     children: ReactNode;
 }
@@ -41,6 +25,21 @@ interface IJwtDecodedUser {
     tokenType: "ACCESS" | "REFRESH"
     expires: number
 }
+
+const AuthContext = createContext<IAuthContext>({
+    setTokens: () => {},
+    clearTokens: () => {},
+    isAuthenticated: false,
+    userId: null,
+});
+
+export const api = axios.create({
+    headers: {
+        Authorization: localStorage.getItem("accessToken")
+            ? `Bearer ${localStorage.getItem("accessToken")}`
+            : undefined
+    }
+});
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
     const queryClient = useQueryClient();
@@ -92,7 +91,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
             }
         }
     }, [accessToken, userId]);
-
 
 
     useEffect(() => {
@@ -153,9 +151,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error("useAuth must be used within AuthProvider");
-    }
+    // if (!context) {
+    //     throw new Error("useAuth must be used within AuthProvider");
+    // }
     return context;
 };
 

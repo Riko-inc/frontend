@@ -1,8 +1,8 @@
 import {useQuery} from "@tanstack/react-query";
-import {api} from "../../app/provider/AuthProvider.tsx";
+import {api} from "../../app/contexts/AuthContext.tsx";
 import {API_ENDPOINTS} from "../../shared/config.ts";
 
-interface IUser {
+interface IUserServerData {
     email: string,
     id: number,
     role: string,
@@ -10,13 +10,13 @@ interface IUser {
 }
 
 export const useUsers = () => {
-    return useQuery<IUser[]>({
+    return useQuery<IUserServerData[]>({
         queryKey: ['users'],
         queryFn: getUsers
     })
 }
 
 const getUsers = async () => {
-    const response = await api.get<IUser[]>(API_ENDPOINTS.USERS)
+    const response = await api.get<IUserServerData[]>(API_ENDPOINTS.USERS)
     return response.data;
 }

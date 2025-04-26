@@ -1,19 +1,32 @@
-import {FieldValues, useForm} from "react-hook-form";
-import {api, useAuth} from "../../app/provider/AuthProvider.tsx";
+import {FieldValues, FormProvider, useForm} from "react-hook-form";
+import {api, useAuth} from "../../app/contexts/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
 import {IUser} from "./types.ts";
 import {useMutation} from "@tanstack/react-query";
 import {ROUTES} from "../../app/routes/Routes.tsx";
 import {API_ENDPOINTS} from "../../shared/config.ts";
+import {createUseStyles} from "react-jss";
+import {flexCenter} from "../../shared/styles/mixins.ts";
+import Input from "../../shared/ui/Input.tsx";
+import PasswordInput from "../../shared/ui/PasswordInput.tsx";
+import Button from "../../shared/ui/Button.tsx";
+import Link from "../../shared/ui/Link.tsx";
 
+
+const useStyles = createUseStyles(() => ({
+    container: {
+        ...flexCenter("column"),
+        height: '95vh',
+    },
+    form: {
+        ...flexCenter("column"),
+    }
+}));
 
 const Registration = () => {
 
-    const {
-        register,
-        handleSubmit,
-        formState: {errors},
-    } = useForm();
+    const classes = useStyles();
+    const methods = useForm();
 
     const { setTokens } = useAuth();
     const navigate = useNavigate();
@@ -46,34 +59,21 @@ const Registration = () => {
     }
 
     return (
-        <>
-            <div>Регистрация</div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <input
-                    {...register("email", {
-                        required: "error",
-                    })}
-                    placeholder="Email"
-                />
-                {errors.email && <div>Email is wrong</div>}
-                <input
-                    {...register("password", {
-                        required: "error",
-                    })}
-                    //type="password"
-                    placeholder="Password"
-                />
-                {errors.password && <div>Password is wrong</div>}
-                <div>
-                    <button
-                            disabled={sendUserMutation.isPending}
-                            type="submit"
-                    >{sendUserMutation.isPending ? 'Creating...' : 'Sign up'}</button>
-                </div>
-
-            </form>
-            <button onClick={() => navigate(ROUTES.LOGIN)}>Перейти в авторизацию</button>
-        </>
+        <div className={classes.container}>
+            <h1>Регистрация</h1>
+            <FormProvider {...methods}>
+                <form className={classes.form} onSubmit={methods.handleSubmit(onSubmit)}>
+                    <Input name="email" placeholder="Почта" minWidth="250px" required />
+                    <PasswordInput name="password" placeholder="Пароль" minWidth="250px" required />
+                    <Button
+                        disabled={sendUserMutation.isPending}
+                        type="submit"
+                        minWidth="180px"
+                    >{sendUserMutation.isPending ? 'Создание...' : 'Зарегистрироваться'}</Button>
+                </form>
+            </FormProvider>
+            <Link onClick={() => navigate(ROUTES.LOGIN)}>Авторизоваться</Link>
+        </div>
     )
 }
 
