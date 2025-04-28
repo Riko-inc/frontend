@@ -13,7 +13,7 @@ interface IDataResponse {
     pages: ITaskResponse[][]
 }
 
-const TASKS_PER_PAGE: number = 3;
+const TASKS_PER_PAGE: number = 50;
 
 const TaskList = () => {
 
@@ -46,7 +46,7 @@ const TaskList = () => {
     }
 
     const {
-        data,
+        data: tasks,
         error,
         fetchNextPage,
         hasNextPage,
@@ -82,7 +82,7 @@ const TaskList = () => {
             {/*})}>params</button>*/}
 
 
-            {data?.pages?.flat().map((task) => (
+            {tasks?.pages?.flat().map((task) => (
                 <div key={task.taskId}>
                     <Task task={task} />
                 </div>

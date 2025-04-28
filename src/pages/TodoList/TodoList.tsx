@@ -5,16 +5,9 @@ import CreateTaskForm from "./CreateTaskForm.tsx";
 
 const TodoList = () => {
 
-
-
-
-
-
     return (
         <>
             <Navbar />
-
-
             <CreateTaskForm />
             <TaskList />
         </>

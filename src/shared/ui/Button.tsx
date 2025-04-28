@@ -1,6 +1,7 @@
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../styles/themes.ts";
 import {ButtonHTMLAttributes, FC, ReactNode} from "react";
+import clsx from "clsx";
 
 interface StyleProps {
     fontSize?: ButtonProps['fontSize'];
@@ -42,14 +43,16 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     children: ReactNode
     fontSize?: string;
     minWidth?: string;
+    className?: string
 }
 
-const Button: FC<ButtonProps> = ({children, minWidth, fontSize, ...props}) => {
+const Button: FC<ButtonProps> = ({children, minWidth, fontSize, className, ...props}) => {
     const classes = useStyles({fontSize, minWidth});
 
     return (
         <>
-            <button className={classes.button} {...props}>{children}</button>
+            <button className={clsx(classes.button, className)}
+                    {...props}>{children}</button>
         </>
     );
 };

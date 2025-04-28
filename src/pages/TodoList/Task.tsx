@@ -2,7 +2,7 @@ import {ITaskResponse} from "../../shared/types.ts";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../../app/contexts/AuthContext.tsx";
 import {API_ENDPOINTS} from "../../shared/config.ts";
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import {flexRow} from "../../shared/styles/mixins.ts";
@@ -11,6 +11,7 @@ import {useUsers} from "./lib.ts";
 import Button from "../../shared/ui/Button.tsx";
 import {FormProvider, useForm, useWatch} from "react-hook-form";
 import TaskDialog from "./TaskDialog.tsx";
+import {format} from "date-fns";
 
 
 const useStyles = createUseStyles((theme: ITheme) => ({
@@ -49,40 +50,42 @@ const useStyles = createUseStyles((theme: ITheme) => ({
 const Task = ({ task }: {task: ITaskResponse}) => {
     const classes = useStyles();
     const queryClient = useQueryClient();
-
     const formattedTask = {
         ...task,
-        assignedToUserId: task.assignedToUserId ? task.assignedToUserId : "null",
+        assignedToUserId: task.assignedToUserId ? String(task.assignedToUserId) : "null",
     }
-
     const mainForm = useForm<ITaskResponse>({
         defaultValues: formattedTask,
     })
-    const formValues = useWatch({ control: mainForm.control });
+    const { control } = mainForm
+    // const watchedValues = useWatch({ control });
+    const formValues = useWatch<ITaskResponse>({ control: mainForm.control });
     // const [error, setError] = useState(false)
 
     useEffect(() => {
-        if (formValues) {
-            // запрос
+        if (task) {
+            mainForm.reset(formattedTask);
         }
-    }, [formValues]);
+    }, [task])
 
-    const deleteTaskMutation = useMutation({
-        mutationFn: () =>
-            api.delete(`${API_ENDPOINTS.DELETE_TASK}/${task.taskId}`),
+
+    const editTaskMutation = useMutation({
+        mutationFn: (newTask: ITaskResponse) => {
+            const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
+            return api.put(API_ENDPOINTS.EDIT_TASK, {
+                ...newTask,
+                taskId: task?.taskId,
+                dueTo: formattedDate,
+            })
+        },
         onSuccess: () => {
-            console.log("задача удалена")
+            console.log("задача изменена")
             queryClient.invalidateQueries({ queryKey: ['tasks'] })
         },
         onError: (error) => {
             console.error(error);
         }
     });
-
-    const deleteTask = () => {
-        console.log("deleteTaskMutation");
-        deleteTaskMutation.mutate()
-    }
 
     const priority = {
         DEFAULT: "Обычный",
@@ -114,7 +117,6 @@ const Task = ({ task }: {task: ITaskResponse}) => {
 
                     <TaskDialog type="Edit" task={formattedTask} />
 
-                    <Button fontSize="14px" onClick={() => deleteTask()}>Удалить</Button>
                 </div>
             </div>
         </FormProvider>

@@ -2,6 +2,7 @@ import {createUseStyles} from "react-jss";
 import {ITheme} from "../styles/themes.ts";
 import {FC} from "react";
 import {useFormContext} from "react-hook-form";
+import clsx from 'clsx';
 
 interface StyleProps {
     fontSize?: InputProps['fontSize'];
@@ -39,6 +40,8 @@ const useStyles = createUseStyles((theme: ITheme) => ({
             minWidth: minWidth || "fit-content",
             fontFamily: theme.typography.fontFamily,
             fontWeight: theme.typography.fontWeight,
+            boxSizing: 'border-box'
+
         }
     }
 }));
@@ -49,16 +52,17 @@ interface InputProps {
     required?: boolean | string;
     fontSize?: string
     minWidth?: string
+    className?: string
 }
 
-const Input: FC<InputProps> = ({placeholder, fontSize, minWidth, name, required}) => {
+const Input: FC<InputProps> = ({placeholder, fontSize, minWidth, name, required, className}) => {
     const classes = useStyles({ fontSize, minWidth });
     const { register, formState: { errors } } = useFormContext();
 
     return (
         <>
             <input
-                className={classes.input}
+                className={clsx(classes.input, className)}
                 placeholder={placeholder}
                 {...register(name, {required})}/>
             {errors[name] && <div>{name} is wrong</div>}

@@ -24,6 +24,7 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         fontSize: theme.typography.fontSize.title,
         fontWeight: 600,
         margin: theme.spacing.xs,
+        cursor: "pointer",
     },
     icon: {
         cursor: 'pointer',
@@ -45,10 +46,11 @@ const Navbar = () => {
                     <div className={classes.icon}>
                         <TbGridDots size={30} />
                     </div>
-                    <p className={classes.title}>Teapo</p>
+                    <div className={classes.title} onClick={() => navigate(ROUTES.MAIN)}>
+                        Teapo
+                    </div>
                 </div>
                 <div className={classes.row}>
-                    <button onClick={() => navigate(ROUTES.MAIN)}>Вернуться на главную страницу</button>
                     <TaskDialog type="Create" />
                     <Filters />
                     <div className={classes.icon}>

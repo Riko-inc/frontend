@@ -74,10 +74,10 @@ const Select: FC<SelectProps> = ({name, values}) => {
 
     const {
         field: { onChange, value },
-    } = useController({ name, control });
+    } = useController({ name, control, defaultValue: "" });
 
     return (
-        <RadixSelect.Root value={value} onValueChange={onChange}>
+        <RadixSelect.Root value={value || ""} onValueChange={onChange}>
 
             <RadixSelect.Trigger className={classes.Trigger}>
                 <RadixSelect.Value placeholder="Placeholder" />
