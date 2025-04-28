@@ -6,7 +6,7 @@ import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import { Dialog } from "radix-ui";
 import {Cross2Icon} from "@radix-ui/react-icons";
-import {FC, useEffect, useState} from "react";
+import {FC, ReactNode, useEffect, useState} from "react";
 import Input from "../../shared/ui/Input.tsx";
 import {flexCenter, flexRow} from "../../shared/styles/mixins.ts";
 import Button from "../../shared/ui/Button.tsx";
@@ -83,12 +83,6 @@ const useStyles = createUseStyles((theme: ITheme) => ({
     Row: {
         ...flexRow,
     },
-    DeleteButton: {
-        backgroundColor: 'red',
-        "&:hover": {
-            backgroundColor: 'darkred',
-        },
-    },
     Input: {
         margin: 0,
         width: '100%',
@@ -124,15 +118,19 @@ const useStyles = createUseStyles((theme: ITheme) => ({
 }));
 
 interface TaskDialogProps {
-    type: "Create" | "Edit"
-    task?: ITaskResponse
-    taskMutationFunction: () => void
+    children?: ReactNode
+    task?: ITaskResponse,
+    open: boolean
+    onClose: () => void
+    taskMutationFunction: (task: ITaskResponse) => void;
+    triggerText?: string
+    title?: string
+    description?: string
 }
 
-const TaskDialog: FC<TaskDialogProps> = ({ type, task, taskMutationFunction }) => {
+const TaskDialog: FC<TaskDialogProps> = ({ children, task, open, onClose, taskMutationFunction,
+                                         triggerText, title, description}) => {
     const classes = useStyles();
-    const queryClient = useQueryClient();
-    const [open, setOpen] = useState(false);
 
     const priority = {
         DEFAULT: "Обычный",
@@ -168,89 +166,31 @@ const TaskDialog: FC<TaskDialogProps> = ({ type, task, taskMutationFunction }) =
             });
         }
     }, [open, task]);
+    //
+    // useEffect(() => {
+    //     setOpen(false)
+    // }, [task]);
 
-    useEffect(() => {
-        setOpen(false)
-    }, [task]);
-
-    const editTaskMutation = useMutation({
-        mutationFn: (newTask: ITaskResponse) => {
-            const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
-            return api.put(API_ENDPOINTS.EDIT_TASK, {
-                ...newTask,
-                taskId: task?.taskId,
-                dueTo: formattedDate,
-            })
-        },
-        onSuccess: () => {
-            console.log("задача изменена")
-            queryClient.invalidateQueries({ queryKey: ['tasks'] })
-            // setOpen(false);
-        },
-        onError: (error) => {
-            console.error(error);
-        }
-    });
-
-    const createTaskMutation = useMutation({
-        mutationFn: (newTask: ITaskRequest) => {
-            const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
-            return api.post(API_ENDPOINTS.CREATE_TASK, {
-                ...newTask,
-                dueTo: formattedDate,
-            })
-        },
-        onSuccess: (data) => {
-            console.log("чел, задача создалась", data)
-            queryClient.invalidateQueries({ queryKey: ['tasks'] })
-            setOpen(false);
-        },
-        onError: (error) => {
-            console.error(error);
-        }
-    });
-
-    const deleteTaskMutation = useMutation({
-        mutationFn: () =>
-            api.delete(`${API_ENDPOINTS.DELETE_TASK}/${task?.taskId}`),
-        onSuccess: () => {
-            console.log("задача удалена")
-            queryClient.invalidateQueries({ queryKey: ['tasks'] })
-        },
-        onError: (error) => {
-            console.error(error);
-        }
-    });
-
-    const deleteTask = () => {
-        deleteTaskMutation.mutate()
-    }
 
     const onSubmit = (data: ITaskResponse) => {
-        console.log("TaskDialog");
-        if (type === "Create") {
-            createTaskMutation.mutate(data)
-        }
-        if (type === "Edit") {
-            editTaskMutation.mutate(data)
-
-        }
+        console.log("TaskMutation");
+        taskMutationFunction(data)
         console.log(data)
     }
 
     return (
-        <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Root open={open} onOpenChange={onClose}>
             <Dialog.Trigger asChild>
-                <Button fontSize="14px">{type === "Create" ? "Создать задачу" : "Изменить задачу"}</Button>
+                <Button fontSize="14px">{triggerText}</Button>
             </Dialog.Trigger>
             <Dialog.Portal>
                 <Dialog.Overlay className={classes.Overlay} />
                 <Dialog.Content className={classes.Content}>
                     <Dialog.Title className={classes.Title}>
-                        {type === "Create" ? "Создать задачу" : "Изменить задачу"}
+                        {title}
                     </Dialog.Title>
                     <Dialog.Description className={classes.Description}>
-                        {type === "Create" ? "Заполните поля для новой задачи" : "Отредактируйте необходимые поля"}
+                        {description}
                     </Dialog.Description>
                     <FormProvider {...modalForm}>
                         <form className={classes.Form} onSubmit={modalForm.handleSubmit(onSubmit)}>
@@ -268,9 +208,7 @@ const TaskDialog: FC<TaskDialogProps> = ({ type, task, taskMutationFunction }) =
 
                             <div className={classes.ButtonsContainer}>
                                 <div className={classes.Row}>
-                                    {type === "Edit" &&
-                                        <Button fontSize="16px"
-                                                onClick={() => deleteTask()}>Удалить</Button>}
+                                    {children}
                                 </div>
                                 <div className={classes.Row}>
                                     <Select values={status} name={"status"} />
@@ -283,7 +221,7 @@ const TaskDialog: FC<TaskDialogProps> = ({ type, task, taskMutationFunction }) =
                         </form>
                     </FormProvider>
                     <Dialog.Close asChild>
-                        <button className={classes.IconButton} aria-label="Close">
+                        <button className={classes.IconButton} onClick={onClose} aria-label="Close">
                             <Cross2Icon />
                         </button>
                     </Dialog.Close>

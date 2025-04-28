@@ -20,3 +20,4 @@ const getUsers = async () => {
     const response = await api.get<IUserServerData[]>(API_ENDPOINTS.USERS)
     return response.data;
 }
+

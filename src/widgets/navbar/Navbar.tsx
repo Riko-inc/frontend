@@ -4,9 +4,9 @@ import {ITheme} from "../../shared/styles/themes.ts";
 import { CgProfile } from "react-icons/cg";
 import { TbGridDots } from "react-icons/tb";
 import Filters from "./Filters.tsx";
-import TaskDialog from "../../pages/TodoList/TaskDialog.tsx";
 import {ROUTES} from "../../app/routes/Routes.tsx";
 import {useNavigate} from "react-router-dom";
+import CreateTaskForm from "../../pages/TodoList/CreateTaskForm.tsx";
 
 const useStyles = createUseStyles((theme: ITheme) => ({
     container: {
@@ -39,6 +39,7 @@ const Navbar = () => {
     const classes = useStyles();
     const navigate = useNavigate();
 
+
     return (
         <>
             <div className={classes.container}>
@@ -51,7 +52,7 @@ const Navbar = () => {
                     </div>
                 </div>
                 <div className={classes.row}>
-                    <TaskDialog type="Create" />
+                    <CreateTaskForm />
                     <Filters />
                     <div className={classes.icon}>
                         <CgProfile size={35} />

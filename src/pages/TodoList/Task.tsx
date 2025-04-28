@@ -1,8 +1,8 @@
-import {ITaskResponse} from "../../shared/types.ts";
+import {ITaskRequest, ITaskResponse} from "../../shared/types.ts";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../../app/contexts/AuthContext.tsx";
 import {API_ENDPOINTS} from "../../shared/config.ts";
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import {flexRow} from "../../shared/styles/mixins.ts";
@@ -12,6 +12,7 @@ import Button from "../../shared/ui/Button.tsx";
 import {FormProvider, useForm, useWatch} from "react-hook-form";
 import TaskDialog from "./TaskDialog.tsx";
 import {format} from "date-fns";
+import DeleteButton from "./DeleteButton.tsx";
 
 
 const useStyles = createUseStyles((theme: ITheme) => ({
@@ -43,6 +44,9 @@ const useStyles = createUseStyles((theme: ITheme) => ({
     row: {
         ...flexRow,
     },
+    dialog: {
+        display: 'none'
+    }
 
 }));
 
@@ -69,23 +73,8 @@ const Task = ({ task }: {task: ITaskResponse}) => {
     }, [task])
 
 
-    const editTaskMutation = useMutation({
-        mutationFn: (newTask: ITaskResponse) => {
-            const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
-            return api.put(API_ENDPOINTS.EDIT_TASK, {
-                ...newTask,
-                taskId: task?.taskId,
-                dueTo: formattedDate,
-            })
-        },
-        onSuccess: () => {
-            console.log("задача изменена")
-            queryClient.invalidateQueries({ queryKey: ['tasks'] })
-        },
-        onError: (error) => {
-            console.error(error);
-        }
-    });
+
+
 
     const priority = {
         DEFAULT: "Обычный",
@@ -102,10 +91,31 @@ const Task = ({ task }: {task: ITaskResponse}) => {
     const usersMap = users ? Object.fromEntries([["null", "Без жертвы"], ...users.map(user =>
             [String(user.id), `Чел №${user.id}`])]) : undefined
 
+    const [open, setOpen] = useState(false);
+
+    const editTaskMutation = useMutation({
+        mutationFn: (newTask: ITaskResponse) => {
+            const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
+            return api.put(API_ENDPOINTS.EDIT_TASK, {
+                ...newTask,
+                taskId: task?.taskId,
+                dueTo: formattedDate,
+            })
+        },
+        onSuccess: () => {
+            console.log("задача изменена")
+            queryClient.invalidateQueries({ queryKey: ['tasks'] })
+            setOpen(false)
+        },
+        onError: (error) => {
+            console.error(error);
+        }
+    });
+
 
     return (
         <FormProvider {...mainForm}>
-            <div className={classes.taskContainer}>
+            <div className={classes.taskContainer} onClick={() => setOpen(true)}>
                 <div className={classes.row}>
                     <p className={classes.number}>DEV-1</p>
                     <span className={classes.title}>{task.title}</span>
@@ -115,7 +125,18 @@ const Task = ({ task }: {task: ITaskResponse}) => {
                     <Select values={priority} name={"priority"} />
                     {usersMap && <Select values={usersMap} name={"assignedToUserId"} />}
 
-                    <TaskDialog type="Edit" task={formattedTask} />
+
+                    <div className={classes.dialog}>
+                        <TaskDialog task={formattedTask} open={open}
+                                    onClose={() => setOpen(false)}
+                                    taskMutationFunction={editTaskMutation.mutate}
+                                    title="Изменить задачу"
+                                    triggerText="Изменить задачу"
+                                    description="Отредактируйте необходимые поля">
+                            <DeleteButton taskId={task.taskId} />
+                        </TaskDialog>
+                    </div>
+
 
                 </div>
             </div>
