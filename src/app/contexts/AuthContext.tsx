@@ -1,5 +1,4 @@
-import {createContext, useCallback, useContext, useEffect, useState} from "react";
-import {ReactNode} from "react";
+import {createContext, ReactNode, useCallback, useContext, useEffect, useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import axios from "axios";
 import {IJwtTokens} from "../../pages/Login/types.ts";
@@ -97,7 +96,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         const requestInterceptor = api.interceptors.request.use(config => {
             const token = localStorage.getItem('accessToken');
             if (token) {
-                // console.log("bearer");
                 config.headers.Authorization = `Bearer ${token}`;
             }
             return config;
@@ -121,7 +119,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                     try {
                         const newTokens: IJwtTokens = await getNewTokens();
                         setTokens(newTokens);
-                        // originalRequest.headers.Authorization = `Bearer ${newTokens.accessToken}`;
                         return api(originalRequest);
                     } catch (refreshError) {
                         clearTokens();
@@ -150,11 +147,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 }
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    // if (!context) {
-    //     throw new Error("useAuth must be used within AuthProvider");
-    // }
-    return context;
+    return useContext(AuthContext);
 };
 
 export default AuthProvider;

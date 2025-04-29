@@ -13,18 +13,21 @@ export const useGlobalStyles = createUseStyles((theme: ITheme) => ({
             fontFamily: theme.typography.fontFamily,
             fontWeight: theme.typography.fontWeight,
             backgroundColor: theme.colors.background,
-            // color: theme.colors.text,
+            color: theme.colors.text,
         },
         h1: {
             margin: theme.spacing.nm,
         },
         '::selection': {
-            backgroundColor: "#0236a0",
-            color: 'inherit',
+            backgroundColor: theme.colors.primary,
+            color: theme.colors.background,
         },
         '::-moz-selection': {
-            backgroundColor: '#0236a0',
-            color: 'inherit',
+            backgroundColor: theme.colors.primary,
+            color: theme.colors.background,
         },
+        '&::-webkit-scrollbar': {
+            display: 'none',
+        }
     },
 }));

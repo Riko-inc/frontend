@@ -3,10 +3,10 @@ import {flexCenter, flexRow} from "../../shared/styles/mixins.ts";
 import {ITheme} from "../../shared/styles/themes.ts";
 import { CgProfile } from "react-icons/cg";
 import { TbGridDots } from "react-icons/tb";
-import Filters from "./Filters.tsx";
-import TaskDialog from "../../pages/TodoList/TaskDialog.tsx";
-import {ROUTES} from "../../app/routes/Routes.tsx";
+import {ROUTES} from "../../app";
 import {useNavigate} from "react-router-dom";
+import CreateTaskForm from "../../pages/TodoList/CreateTaskForm.tsx";
+import FilterPopover from "./FilterPopover.tsx";
 
 const useStyles = createUseStyles((theme: ITheme) => ({
     container: {
@@ -24,6 +24,7 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         fontSize: theme.typography.fontSize.title,
         fontWeight: 600,
         margin: theme.spacing.xs,
+        cursor: "pointer",
     },
     icon: {
         cursor: 'pointer',
@@ -38,6 +39,7 @@ const Navbar = () => {
     const classes = useStyles();
     const navigate = useNavigate();
 
+
     return (
         <>
             <div className={classes.container}>
@@ -45,12 +47,13 @@ const Navbar = () => {
                     <div className={classes.icon}>
                         <TbGridDots size={30} />
                     </div>
-                    <p className={classes.title}>Teapo</p>
+                    <div className={classes.title} onClick={() => navigate(ROUTES.MAIN)}>
+                        Teapo
+                    </div>
                 </div>
                 <div className={classes.row}>
-                    <button onClick={() => navigate(ROUTES.MAIN)}>Вернуться на главную страницу</button>
-                    <TaskDialog type="Create" />
-                    <Filters />
+                    <FilterPopover />
+                    <CreateTaskForm />
                     <div className={classes.icon}>
                         <CgProfile size={35} />
                     </div>

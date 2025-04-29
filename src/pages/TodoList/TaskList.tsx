@@ -1,6 +1,6 @@
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {IFilterValues, ITaskResponse} from "../../shared/types.ts";
-import {api, useAuth} from "../../app/contexts/AuthContext.tsx";
+import {api, useAuth} from "../../app";
 import {API_ENDPOINTS} from "../../shared/config.ts";
 import Task from "./Task.tsx";
 import {useEffect} from "react";
@@ -13,16 +13,13 @@ interface IDataResponse {
     pages: ITaskResponse[][]
 }
 
-const TASKS_PER_PAGE: number = 3;
+const TASKS_PER_PAGE: number = 50;
 
 const TaskList = () => {
 
     const { userId } = useAuth()
-    // const {data: users} = useUsers()
-
 
     const filters = useAppSelector((state) => state.filters);
-
 
     const { ref, inView } = useInView();
 
@@ -35,10 +32,10 @@ const TaskList = () => {
             params: {
                 page: pageParam,
                 size: TASKS_PER_PAGE,
-                ...(filters.status?.length ? filters.status : {}),
+                ...(filters.status?.length ? { status: filters.status.join(',') } : {}),
                 ...(filters.priority?.length ? { priority: filters.priority.join(',') } : {}),
-                ...(filters.assignedToUserId?.length ? { assignedToUserId: filters.assignedToUserId } : {}),
-                ...(filters.createdByUserId?.length ? { createdByUserId: filters.createdByUserId } : {}),
+                ...(filters.assignedToUserId?.length ? { assignedToUserId: filters.assignedToUserId.join(',') } : {}),
+                ...(filters.createdByUserId?.length ? { createdByUserId: filters.createdByUserId.join(',') } : {}),
             }
         })
             console.log(response.data)
@@ -46,7 +43,7 @@ const TaskList = () => {
     }
 
     const {
-        data,
+        data: tasks,
         error,
         fetchNextPage,
         hasNextPage,
@@ -72,28 +69,15 @@ const TaskList = () => {
 
     return (
         <>
-            {/*<p>Список задач</p>*/}
-            {/*<button onClick={() => console.log(filters)}>Фильтры</button>*/}
-            {/*<button onClick={() => console.log(data)}>data</button>*/}
-            {/*<button onClick={() => console.log({*/}
-            {/*    "inView": inView,*/}
-            {/*    "hasNextPage": hasNextPage,*/}
-            {/*    "isFetchingNextPage": isFetchingNextPage,*/}
-            {/*})}>params</button>*/}
-
-
-            {data?.pages?.flat().map((task) => (
+            {tasks?.pages?.flat().map((task) => (
                 <div key={task.taskId}>
                     <Task task={task} />
                 </div>
             ))}
 
-
             <div ref={ref}>
                 {isFetchingNextPage ? 'Загрузка...' : hasNextPage ? 'Прокрутите вниз' : 'Все задачи загружены'}
             </div>
-
-            {/*<div ref={loadMoreRef} style={{ height: "1px" }} />*/}
         </>
     )
 }

@@ -1,8 +1,5 @@
-import {useAuth} from "../../app/contexts/AuthContext.tsx";
+import {useAuth, ROUTES} from "../../app";
 import {useNavigate} from "react-router-dom";
-import {ROUTES} from "../../app/routes/Routes.tsx";
-
-
 
 
 const Main = () => {

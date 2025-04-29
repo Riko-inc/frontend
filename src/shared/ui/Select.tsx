@@ -1,8 +1,8 @@
 import * as RadixSelect from "@radix-ui/react-select";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { createUseStyles } from "react-jss";
-import {flexCenter} from "../../shared/styles/mixins.ts";
-import {ITheme} from "../../shared/styles/themes.ts";
+import {flexCenter} from "../styles/mixins.ts";
+import {ITheme} from "../styles/themes.ts";
 import {FC} from "react";
 import {CheckIcon} from "@radix-ui/react-icons";
 import {useController, useFormContext} from "react-hook-form";
@@ -21,6 +21,9 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         "&:hover": {
             backgroundColor: theme.colors.neutral,
         },
+        "&:focus": {
+            outline: `1px solid ${theme.colors.neutral}`,
+        },
     },
     Icon: {
         color: theme.colors.text,
@@ -38,6 +41,13 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         padding: theme.spacing.sm,
         width: '100%',
     },
+    Scroll: {
+        maxHeight: '200px',
+        overflowY: 'auto',
+        '&::-webkit-scrollbar': {
+            display: 'none',
+        }
+    },
     Item: {
         position: "relative",
         ...flexCenter("row"),
@@ -51,6 +61,9 @@ const useStyles = createUseStyles((theme: ITheme) => ({
             backgroundColor: theme.colors.neutral,
         },
         padding: theme.spacing.xs,
+        "&:focus": {
+            outline: 'none',
+        },
     },
     Label: {
         color: theme.colors.neutral,
@@ -66,18 +79,26 @@ const useStyles = createUseStyles((theme: ITheme) => ({
 interface SelectProps {
     name: string;
     values: Record<string, string>;
+    setIsUserActionTrue?: () => void
 }
 
-const Select: FC<SelectProps> = ({name, values}) => {
+const Select: FC<SelectProps> = ({name, values, setIsUserActionTrue}) => {
     const classes = useStyles();
     const { control } = useFormContext();
 
     const {
         field: { onChange, value },
-    } = useController({ name, control });
+    } = useController({ name, control, defaultValue: "" });
+
+    const handleChange = (value: string) => {
+        if (setIsUserActionTrue) {
+            setIsUserActionTrue()
+        }
+        onChange(value)
+    }
 
     return (
-        <RadixSelect.Root value={value} onValueChange={onChange}>
+        <RadixSelect.Root value={value || ""} onValueChange={handleChange}>
 
             <RadixSelect.Trigger className={classes.Trigger}>
                 <RadixSelect.Value placeholder="Placeholder" />
@@ -86,22 +107,27 @@ const Select: FC<SelectProps> = ({name, values}) => {
                 </RadixSelect.Icon>
             </RadixSelect.Trigger>
 
-            <RadixSelect.Portal>
-                <RadixSelect.Content className={classes.Content} position="popper" side="bottom" align="end" sideOffset={5}>
+            <RadixSelect.Portal >
+                <RadixSelect.Content onClick={(e) => e.stopPropagation()}
+                                     className={classes.Content}
+                                     position="popper" side="bottom" align="end" sideOffset={5}>
                     <RadixSelect.Viewport className={classes.Viewport}>
                         <RadixSelect.Group>
                             <RadixSelect.Label className={classes.Label}>{name}</RadixSelect.Label>
 
-                            {Object.entries(values).map(([optionValue, optionLabel]) => (
-                                <div key={optionValue}>
-                                    <RadixSelect.Item className={classes.Item} value={optionValue}>
-                                        <RadixSelect.ItemText>{optionLabel}</RadixSelect.ItemText>
-                                        <RadixSelect.ItemIndicator className={classes.ItemIndicator}>
-                                            <CheckIcon />
-                                        </RadixSelect.ItemIndicator>
-                                    </RadixSelect.Item>
-                                </div>
-                            ))}
+                            <div className={classes.Scroll}>
+                                {Object.entries(values).map(([optionValue, optionLabel]) => (
+                                    <div key={optionValue}>
+                                        <RadixSelect.Item className={classes.Item} value={optionValue}>
+                                            <RadixSelect.ItemText>{optionLabel}</RadixSelect.ItemText>
+                                            <RadixSelect.ItemIndicator className={classes.ItemIndicator}>
+                                                <CheckIcon />
+                                            </RadixSelect.ItemIndicator>
+                                        </RadixSelect.Item>
+                                    </div>
+                                ))}
+                            </div>
+
                         </RadixSelect.Group>
                     </RadixSelect.Viewport>
                 </RadixSelect.Content>

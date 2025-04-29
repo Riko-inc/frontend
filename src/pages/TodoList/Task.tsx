@@ -1,16 +1,17 @@
 import {ITaskResponse} from "../../shared/types.ts";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {api} from "../../app/contexts/AuthContext.tsx";
+import {api} from "../../app";
 import {API_ENDPOINTS} from "../../shared/config.ts";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import {flexRow} from "../../shared/styles/mixins.ts";
-import Select from "./Select.tsx";
+import Select from "../../shared/ui/Select.tsx";
 import {useUsers} from "./lib.ts";
-import Button from "../../shared/ui/Button.tsx";
 import {FormProvider, useForm, useWatch} from "react-hook-form";
 import TaskDialog from "./TaskDialog.tsx";
+import {format} from "date-fns";
+import DeleteButton from "./DeleteButton.tsx";
 
 
 const useStyles = createUseStyles((theme: ITheme) => ({
@@ -18,14 +19,12 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         ...flexRow,
         border: `1px solid ${theme.colors.neutral}`,
         cursor: "pointer",
-        // "&:hover": {
-        //     backgroundColor: theme.colors.neutral,
-        // },
 
+        backgroundColor: theme.colors.background,
+        color: theme.colors.text,
         height: '50px',
         display: 'flex',
         justifyContent: 'space-between',
-
         padding: '10px',
 
     },
@@ -42,6 +41,9 @@ const useStyles = createUseStyles((theme: ITheme) => ({
     row: {
         ...flexRow,
     },
+    dialog: {
+        display: 'none'
+    }
 
 }));
 
@@ -49,40 +51,33 @@ const useStyles = createUseStyles((theme: ITheme) => ({
 const Task = ({ task }: {task: ITaskResponse}) => {
     const classes = useStyles();
     const queryClient = useQueryClient();
+    const [open, setOpen] = useState(false);
 
     const formattedTask = {
         ...task,
-        assignedToUserId: task.assignedToUserId ? task.assignedToUserId : "null",
+        assignedToUserId: task.assignedToUserId ? String(task.assignedToUserId) : "null",
     }
-
     const mainForm = useForm<ITaskResponse>({
         defaultValues: formattedTask,
     })
-    const formValues = useWatch({ control: mainForm.control });
-    // const [error, setError] = useState(false)
+
+    const formValues = useWatch<ITaskResponse>({ control: mainForm.control });
+
 
     useEffect(() => {
-        if (formValues) {
-            // запрос
+        if (task) {
+            mainForm.reset(formattedTask);
         }
-    }, [formValues]);
+    }, [task])
 
-    const deleteTaskMutation = useMutation({
-        mutationFn: () =>
-            api.delete(`${API_ENDPOINTS.DELETE_TASK}/${task.taskId}`),
-        onSuccess: () => {
-            console.log("задача удалена")
-            queryClient.invalidateQueries({ queryKey: ['tasks'] })
-        },
-        onError: (error) => {
-            console.error(error);
+    const [isUserAction, setIsUserAction] = useState(false);
+
+    useEffect(() => {
+        if (isUserAction) {
+            editTaskMutation.mutate(formValues as ITaskResponse);
+            setIsUserAction(false);
         }
-    });
-
-    const deleteTask = () => {
-        console.log("deleteTaskMutation");
-        deleteTaskMutation.mutate()
-    }
+    }, [formValues, isUserAction]);
 
     const priority = {
         DEFAULT: "Обычный",
@@ -100,26 +95,55 @@ const Task = ({ task }: {task: ITaskResponse}) => {
             [String(user.id), `Чел №${user.id}`])]) : undefined
 
 
+    const editTaskMutation = useMutation({
+        mutationFn: (newTask: ITaskResponse) => {
+            const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
+            return api.put(API_ENDPOINTS.EDIT_TASK, {
+                ...newTask,
+                taskId: task?.taskId,
+                dueTo: formattedDate,
+            })
+        },
+        onSuccess: () => {
+            setOpen(false)
+            console.log("задача изменена")
+            queryClient.invalidateQueries({ queryKey: ['tasks'] })
+
+        },
+        onError: (error) => {
+            console.error(error);
+        }
+    });
+
+
     return (
         <FormProvider {...mainForm}>
-            <div className={classes.taskContainer}>
+            <div className={classes.taskContainer} onClick={() => setOpen(true)}>
                 <div className={classes.row}>
                     <p className={classes.number}>DEV-1</p>
                     <span className={classes.title}>{task.title}</span>
                 </div>
                 <div className={classes.row}>
-                    <Select values={status} name={"status"} />
-                    <Select values={priority} name={"priority"} />
-                    {usersMap && <Select values={usersMap} name={"assignedToUserId"} />}
+                    <Select values={status} name={"status"}
+                            setIsUserActionTrue={() => setIsUserAction(true)} />
+                    <Select values={priority} name={"priority"}
+                            setIsUserActionTrue={() => setIsUserAction(true)} />
+                    {usersMap && <Select values={usersMap} name={"assignedToUserId"}
+                                         setIsUserActionTrue={() => setIsUserAction(true)} />}
 
-                    <TaskDialog type="Edit" task={formattedTask} />
-
-                    <Button fontSize="14px" onClick={() => deleteTask()}>Удалить</Button>
+                    <div className={classes.dialog}>
+                        <TaskDialog task={formattedTask} open={open}
+                                    onOpenChange={() => setOpen(false)}
+                                    taskMutationFunction={editTaskMutation.mutate}
+                                    title="Изменить задачу"
+                                    triggerText="Изменить задачу"
+                                    description="Отредактируйте необходимые поля">
+                            <DeleteButton taskId={task.taskId} />
+                        </TaskDialog>
+                    </div>
                 </div>
             </div>
         </FormProvider>
-
-
     )
 }
 

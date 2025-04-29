@@ -1,10 +1,10 @@
-import { Input as HeadlessInput } from "@headlessui/react"
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../styles/themes.ts";
 import {FC, useState} from "react";
 import {useFormContext} from "react-hook-form";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import {flexCenter} from "../styles/mixins.ts";
+import clsx from "clsx";
 
 interface StyleProps {
     fontSize?: InputProps['fontSize'];
@@ -21,9 +21,6 @@ const useStyles = createUseStyles((theme: ITheme) => ({
     input: ({ fontSize, minWidth }: StyleProps) => {
         const baseFontSize = fontSize || theme.typography.fontSize.medium;
 
-        const verticalPadding = `calc(${baseFontSize} * 0.75)`;
-        const horizontalPadding = `calc(${baseFontSize} * 1)`;
-
         return {
             backgroundColor: theme.colors.background,
             color: theme.colors.text,
@@ -34,7 +31,7 @@ const useStyles = createUseStyles((theme: ITheme) => ({
             },
 
             border: `1px solid ${theme.colors.neutral}`,
-            borderRadius: `calc(${baseFontSize} * 0.5)`,
+            borderRadius: "0.5em",
             "&:hover": {
                 boxShadow: `0 0 5px ${theme.colors.neutral}`,
             },
@@ -44,7 +41,7 @@ const useStyles = createUseStyles((theme: ITheme) => ({
 
             fontSize: baseFontSize,
             margin: theme.spacing.sm,
-            padding: `${verticalPadding} ${horizontalPadding}`,
+            padding: "0.75em 1em",
             minWidth: minWidth || "fit-content",
         }
     },
@@ -64,9 +61,10 @@ interface InputProps {
     required?: boolean | string;
     fontSize?: string
     minWidth?: string
+    className?: string
 }
 
-const Input: FC<InputProps> = ({placeholder, fontSize, minWidth, name, required}) => {
+const Input: FC<InputProps> = ({placeholder, fontSize, minWidth, name, required, className}) => {
     const classes = useStyles({fontSize, minWidth});
     const [passwordIsHidden, setPasswordIsHidden] = useState(true);
     const { register, formState: { errors } } = useFormContext();
@@ -77,12 +75,11 @@ const Input: FC<InputProps> = ({placeholder, fontSize, minWidth, name, required}
 
     return (
         <div className={classes.inputContainer}>
-            <HeadlessInput
-                className={classes.input}
+            <input
+                className={clsx(classes.input, className)}
                 placeholder={placeholder}
                 type={passwordIsHidden ? 'password' : 'text'}
-                {...register(name, {required})}
-            />
+                {...register(name, {required})}/>
             <div className={classes.icon} onClick={showPassword}>
                 {passwordIsHidden ? <FaRegEyeSlash /> : <FaRegEye />}
             </div>

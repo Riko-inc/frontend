@@ -69,11 +69,11 @@ export const lightTheme: ITheme = {
 export const darkTheme: ITheme = {
     ...lightTheme,
     colors: {
-        primary: 'blue', //цвет
-        secondary: 'darkblue', //темносиний
-        neutral: 'lightgray', //серый
-        background: 'white', //белый
-        text: 'black', //черный
-        focus: 'black'
+        primary: 'red', //цвет
+        secondary: 'darkred', //темносиний
+        neutral: 'white', //серый
+        background: 'black', //белый
+        text: 'white', //черный
+        focus: 'white'
     }
 };

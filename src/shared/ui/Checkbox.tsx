@@ -5,6 +5,7 @@ import {flexCenter} from "../styles/mixins.ts";
 import {FC} from "react";
 import {useFormContext} from "react-hook-form";
 
+
 const useStyles = createUseStyles((theme: ITheme) => ({
     checkbox: {
         ...flexCenter("row"),
@@ -17,6 +18,9 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         "&:hover": {
             backgroundColor: theme.colors.neutral,
         },
+    },
+    input: {
+
     },
     label: {
         padding: 0,
@@ -37,37 +41,19 @@ interface CheckboxProps {
 const Checkbox: FC<CheckboxProps> = ({label, name, value}) => {
     const classes = useStyles();
     const { register } = useFormContext();
+    const inputId = `${name}-${value}`
 
     return (
-        <div className={classes.checkbox}>
-            <input type="checkbox" value={value} {...register(name)} />
-            <label className={classes.label}>{label}</label>
-        </div>
-        // <Controller
-        //     name={name}
-        //     control={control}
-        //     render={({ field }) => (
-        //         <HeadlessCheckbox
-        //             className={classes.checkbox}
-        //             {...field}
-        //             value={value}
-        //         >
-        //             {({ checked }) =>
-        //                 checked ? (
-        //                     <>
-        //                         <MdOutlineCheckBox size={15} />
-        //                         <label className={classes.label}>{label}</label>
-        //                     </>
-        //                 ) : (
-        //                     <>
-        //                         <MdOutlineCheckBoxOutlineBlank size={15} />
-        //                         <label className={classes.label}>{label}</label>
-        //                     </>
-        //                 )
-        //             }
-        //         </HeadlessCheckbox>
-        //     )}
-        // />
+        <label htmlFor={inputId} className={classes.checkbox}>
+            <input
+                id={inputId}
+                type="checkbox"
+                className={classes.input}
+                value={value}
+                {...register(name)}
+            />
+            <span className={classes.label}>{label}</span>
+        </label>
     );
 };
 

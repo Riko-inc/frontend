@@ -2,6 +2,7 @@ import {createUseStyles} from "react-jss";
 import {ITheme} from "../styles/themes.ts";
 import {FC} from "react";
 import {useFormContext} from "react-hook-form";
+import clsx from 'clsx';
 
 interface StyleProps {
     fontSize?: InputProps['fontSize'];
@@ -11,9 +12,6 @@ interface StyleProps {
 const useStyles = createUseStyles((theme: ITheme) => ({
     input: ({ fontSize, minWidth }: StyleProps) => {
         const baseFontSize = fontSize || theme.typography.fontSize.medium;
-
-        const verticalPadding = `calc(${baseFontSize} * 0.75)`;
-        const horizontalPadding = `calc(${baseFontSize} * 1)`;
 
         return {
             backgroundColor: theme.colors.background,
@@ -25,7 +23,7 @@ const useStyles = createUseStyles((theme: ITheme) => ({
             },
 
             border: `1px solid ${theme.colors.neutral}`,
-            borderRadius: `calc(${baseFontSize} * 0.5)`,
+            borderRadius: "0.5em",
             "&:hover": {
                 boxShadow: `0 0 5px ${theme.colors.neutral}`,
             },
@@ -35,10 +33,12 @@ const useStyles = createUseStyles((theme: ITheme) => ({
 
             fontSize: baseFontSize,
             margin: theme.spacing.sm,
-            padding: `${verticalPadding} ${horizontalPadding}`,
+            padding: "0.75em 1em",
             minWidth: minWidth || "fit-content",
             fontFamily: theme.typography.fontFamily,
             fontWeight: theme.typography.fontWeight,
+            boxSizing: 'border-box'
+
         }
     }
 }));
@@ -49,16 +49,17 @@ interface InputProps {
     required?: boolean | string;
     fontSize?: string
     minWidth?: string
+    className?: string
 }
 
-const Input: FC<InputProps> = ({placeholder, fontSize, minWidth, name, required}) => {
+const Input: FC<InputProps> = ({placeholder, fontSize, minWidth, name, required, className}) => {
     const classes = useStyles({ fontSize, minWidth });
     const { register, formState: { errors } } = useFormContext();
 
     return (
         <>
             <input
-                className={classes.input}
+                className={clsx(classes.input, className)}
                 placeholder={placeholder}
                 {...register(name, {required})}/>
             {errors[name] && <div>{name} is wrong</div>}

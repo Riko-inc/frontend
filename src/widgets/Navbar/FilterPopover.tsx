@@ -1,21 +1,15 @@
-import {
-    Disclosure, DisclosureButton, DisclosurePanel,
-    Popover,
-    PopoverButton,
-    PopoverPanel
-} from "@headlessui/react";
-import {useUsers} from "../../pages/TodoList/lib.ts";
+import { Collapsible, Popover} from "radix-ui";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import {flexCenter} from "../../shared/styles/mixins.ts";
-import Checkbox from "../../shared/ui/Checkbox.tsx";
+
 import {FormProvider, useForm} from "react-hook-form";
-import {useAppDispatch, } from "../../shared/store/redux.ts";
-import {setFilters} from "../../shared/store/filterSlice.ts";
-import {useEffect} from "react";
+import {useAppDispatch} from "../../shared/store/redux.ts";
 import {IFilterValues} from "../../shared/types.ts";
-
-
+import {useEffect} from "react";
+import {setFilters} from "../../shared/store/filterSlice.ts";
+import {useUsers} from "../../pages/TodoList/lib.ts";
+import Checkbox from "../../shared/ui/Checkbox.tsx";
 
 const useStyles = createUseStyles((theme: ITheme) => ({
     filterButton: {
@@ -43,19 +37,6 @@ const useStyles = createUseStyles((theme: ITheme) => ({
 
         paddingRight: '5px',
 
-        height: 'auto',
-        maxHeight: 'min(400px, 50vh)',
-        minHeight: '200px',
-        overflowY: 'auto',
-
-        overscrollBehavior: 'contain',
-        position: 'relative',
-
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-
-
         "&:focus": {
             outline: 'none',
         },
@@ -69,19 +50,39 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         // margin: `${theme.spacing.xs} 0`,
 
         justifyContent: "start",
-
+        color: theme.colors.neutral,
         backgroundColor: theme.colors.background,
         "&:hover": {
             backgroundColor: theme.colors.neutral,
-
+            color: theme.colors.background,
         },
     },
     itemPanel: {
         width: "100%",
     },
     item: {
+        ...flexCenter("row"),
+        gap: '3px',
+        width: '100%',
+        display: "flex",
+        justifyContent: "start",
+        borderRadius: "6px",
+        padding: `2px 5px`,
+        "&:hover": {
+            backgroundColor: theme.colors.neutral,
+        },
+    },
+    ScrollRoot: {
+        width: '100%',
+        maxHeight: '400px',
+        borderRadius: '6px',
+        overflowY: "auto",
+        // '&::-webkit-scrollbar': {
+        //     display: 'none',
+        // },
 
-    }
+        backgroundColor: theme.colors.background,
+    },
 }));
 
 const deafultFilterValues: IFilterValues = {
@@ -91,22 +92,21 @@ const deafultFilterValues: IFilterValues = {
     createdByUserId: []
 }
 
-const Filters = () => {
+const FilterPopover = () => {
     const classes = useStyles();
     const {data: users} = useUsers()
-    const methods = useForm({
+    const filterForm = useForm({
         defaultValues: deafultFilterValues
     });
 
     const dispatch = useAppDispatch();
 
-    const { watch } = methods;
+    const { watch } = filterForm;
     const formValues: IFilterValues = watch();
 
     useEffect(() => {
         dispatch(setFilters(formValues));
     }, [formValues, dispatch]);
-
 
     const usersLists = ["assignedToUserId", "createdByUserId"]
     const filtersData = {
@@ -123,51 +123,45 @@ const Filters = () => {
         }
     }
 
-
-
     return (
-        <FormProvider {...methods}>
-            <Popover>
-                <PopoverButton className={classes.filterButton}>Фильтры</PopoverButton>
-                    <PopoverPanel anchor="bottom end" className={classes.container}>
-                        {Object.entries(filtersData).map(([filterKey, options]) => (
-                            <Disclosure key={filterKey} defaultOpen={true} as="div" className={classes.itemPanel}>
-                                <>
-                                    <DisclosureButton className={classes.itemButton}>
-                                        <span>{filterKey}</span>
-                                    </DisclosureButton>
-                                    <DisclosurePanel className={classes.itemPanel}>
+        <FormProvider {...filterForm}>
+            <Popover.Root>
+                <Popover.Trigger asChild>
+                    <button className={classes.filterButton}>Фильтры</button>
+                </Popover.Trigger>
+                <Popover.Portal>
+                    <Popover.Content className={classes.container}>
+                        <div className={classes.ScrollRoot}>
+                            {Object.entries(filtersData).map(([filterKey, options]) => (
+                                <Collapsible.Root key={filterKey} className={classes.itemPanel} defaultOpen={true}>
+                                    <Collapsible.Trigger className={classes.itemButton}>{filterKey}</Collapsible.Trigger>
+                                    <Collapsible.Content className={classes.itemPanel}>
                                         {Object.entries(options).map(([optionKey, optionLabel]) => (
                                             <div key={optionKey} className={classes.item}>
                                                 <Checkbox value={optionKey} label={optionLabel} name={filterKey} />
                                             </div>
                                         ))}
-                                    </DisclosurePanel>
-                                </>
-                            </Disclosure>
-                        ))}
-                        {usersLists.map((title) => (
-                            <Disclosure defaultOpen={true} key={title} as="div">
-                                <>
-                                    <DisclosureButton className={classes.itemButton}>
-                                        <span>{title}</span>
-                                    </DisclosureButton>
-                                    <DisclosurePanel className={classes.itemPanel}>
+                                    </Collapsible.Content>
+                                </Collapsible.Root>
+                            ))}
+                            {usersLists.map((title) => (
+                                <Collapsible.Root key={title} className={classes.itemPanel} defaultOpen={true}>
+                                    <Collapsible.Trigger className={classes.itemButton}>{title}</Collapsible.Trigger>
+                                    <Collapsible.Content className={classes.itemPanel}>
                                         {users && users.map((user) => (
                                             <div key={user.id} className={classes.item}>
-                                                <Checkbox value={`${user.id}`}
-                                                          label={`Пользователь с id ${user.id}`}
-                                                          name={title}/>
+                                                <Checkbox value={`${user.id}`} label={`Пользователь с id ${user.id}`} name={title} />
                                             </div>
                                         ))}
-                                    </DisclosurePanel>
-                                </>
-                            </Disclosure>
-                        ))}
-                    </PopoverPanel>
-            </Popover>
+                                    </Collapsible.Content>
+                                </Collapsible.Root>
+                            ))}
+                        </div>
+                    </Popover.Content>
+                </Popover.Portal>
+            </Popover.Root>
         </FormProvider>
     );
 };
 
-export default Filters;
+export default FilterPopover;

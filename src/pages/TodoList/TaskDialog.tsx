@@ -1,19 +1,15 @@
 import {FormProvider, useForm} from "react-hook-form";
-import {ITaskRequest, ITaskResponse} from "../../shared/types.ts";
-import Select from "./Select.tsx";
+import {ITaskResponse} from "../../shared/types.ts";
+import Select from "../../shared/ui/Select.tsx";
 import {useUsers} from "./lib.ts";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import { Dialog } from "radix-ui";
-import {Cross2Icon} from "@radix-ui/react-icons";
-import {FC} from "react";
+import {FC, ReactNode, useEffect} from "react";
 import Input from "../../shared/ui/Input.tsx";
-import {flexCenter} from "../../shared/styles/mixins.ts";
+import {flexCenter, flexRow} from "../../shared/styles/mixins.ts";
 import Button from "../../shared/ui/Button.tsx";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {format} from "date-fns";
-import {api} from "../../app/contexts/AuthContext.tsx";
-import {API_ENDPOINTS} from "../../shared/config.ts";
+
 
 const useStyles = createUseStyles((theme: ITheme) => ({
     Overlay: {
@@ -38,10 +34,16 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         display: 'flex',
         justifyContent: 'start',
         width: '100%',
-        margin: theme.spacing.xs,
+        margin: `0 ${theme.spacing.xs}`,
 
         fontSize: theme.typography.fontSize.large,
-
+    },
+    Description: {
+        margin: theme.spacing.xs,
+        color: theme.colors.neutral,
+        display: 'flex',
+        justifyContent: 'end',
+        width: '100%',
     },
     IconButton: {
         all: 'unset',
@@ -61,9 +63,23 @@ const useStyles = createUseStyles((theme: ITheme) => ({
             backgroundColor: theme.colors.neutral,
         },
     },
+    Form: {
+        width: '100%',
+        margin: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+    },
     ButtonsContainer: {
         display: 'flex',
-        justifyContent: 'end',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    Row: {
+        ...flexRow,
+    },
+    Input: {
+        margin: 0,
         width: '100%',
     },
     Textarea: {
@@ -84,25 +100,32 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         "&:focus": {
             outline: "none",
         },
-        minHeight: "100px",
+        minHeight: "150px",
         width: '100%',
         padding: `${theme.spacing.sm} ${theme.spacing.md}`,
-        margin: theme.spacing.sm,
 
         fontSize: theme.typography.fontSize.medium,
         fontFamily: theme.typography.fontFamily,
         fontWeight: theme.typography.fontWeight,
+        boxSizing: 'border-box'
     },
+
 }));
 
 interface TaskDialogProps {
-    type: "Create" | "Edit"
-    task?: ITaskResponse
+    children?: ReactNode
+    task?: ITaskResponse,
+    open: boolean
+    onOpenChange: () => void
+    taskMutationFunction: (task: ITaskResponse) => void;
+    triggerText?: string
+    title?: string
+    description?: string
 }
 
-const TaskDialog: FC<TaskDialogProps> = ({ type, task }) => {
+const TaskDialog: FC<TaskDialogProps> = ({ children, task, open, onOpenChange, taskMutationFunction,
+                                         triggerText, title, description}) => {
     const classes = useStyles();
-    const queryClient = useQueryClient();
 
     const priority = {
         DEFAULT: "Обычный",
@@ -120,97 +143,78 @@ const TaskDialog: FC<TaskDialogProps> = ({ type, task }) => {
         [String(user.id), `Чел №${user.id}`])]) : undefined
 
     const modalForm = useForm<ITaskResponse>({
-        defaultValues: task,
+        defaultValues: task
     });
 
-    const editTaskMutation = useMutation({
-        mutationFn: (newTask: ITaskResponse) => {
-            const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
-            return api.put(API_ENDPOINTS.EDIT_TASK, {
-                ...newTask,
-                taskId: task?.taskId,
-                dueTo: formattedDate,
-            })
-        },
-        onSuccess: () => {
-            console.log("задача изменена")
-            queryClient.invalidateQueries({ queryKey: ['tasks'] })
-        },
-        onError: (error) => {
-            console.error(error);
+    useEffect(() => {
+        if (!open && task) {
+            modalForm.reset(task);
         }
-    });
+        if (open && !task) {
+            modalForm.reset({
+                title: "",
+                description: "",
+                priority: "DEFAULT",
+                status: "NEW",
+                assignedToUserId: "null",
+                // dueTo: "",
+            });
+        }
+    }, [open, task]);
 
-    const createTaskMutation = useMutation({
-        mutationFn: (newTask: ITaskRequest) => {
-            const formattedDate = newTask.dueTo ? format(newTask.dueTo, 'dd-MM-yyyy HH:mm') : null;
-            return api.post(API_ENDPOINTS.CREATE_TASK, {
-                ...newTask,
-                dueTo: formattedDate,
-            })
-        },
-        onSuccess: (data) => {
-            console.log("чел, задача создалась", data)
-            queryClient.invalidateQueries({ queryKey: ['tasks'] })
-        },
-        onError: (error) => {
-            console.error(error);
-        }
-    });
 
     const onSubmit = (data: ITaskResponse) => {
-        console.log("TaskDialog");
-        if (type === "Create") {
-            createTaskMutation.mutate(data)
-        }
-        if (type === "Edit") {
-            editTaskMutation.mutate(data)
-        }
+        console.log("TaskMutation");
+        taskMutationFunction(data)
         console.log(data)
     }
 
     return (
-        <FormProvider {...modalForm}>
-            <form onSubmit={modalForm.handleSubmit(onSubmit)}>
-                <Dialog.Root>
-                    <Dialog.Trigger asChild>
-                        <Button fontSize="14px">{type === "Create" ? "Создать задачу" : "Изменить задачу"}</Button>
-                    </Dialog.Trigger>
-                    <Dialog.Portal>
-                        <Dialog.Overlay className={classes.Overlay} />
-                        <Dialog.Content className={classes.Content}>
-                            <Dialog.Title className={classes.Title}>
-                                {type === "Create" ? "Создать задачу" : "Изменить задачу"}
-                            </Dialog.Title>
-
+        <Dialog.Root open={open} onOpenChange={onOpenChange}>
+            <Dialog.Trigger asChild>
+                <Button fontSize="14px">{triggerText}</Button>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+                <Dialog.Overlay className={classes.Overlay} />
+                <Dialog.Content className={classes.Content}>
+                    <Dialog.Title className={classes.Title}>
+                        {title}
+                    </Dialog.Title>
+                    <Dialog.Description className={classes.Description}>
+                        {description}
+                    </Dialog.Description>
+                    <FormProvider {...modalForm}>
+                        <form className={classes.Form} onSubmit={modalForm.handleSubmit(onSubmit)}>
                             <Input
-                                minWidth="100%"
+                                className={classes.Input}
+                                minWidth="auto"
                                 placeholder="Заголовок"
                                 name="title"
                                 fontSize="16px"
                                 required />
                             <textarea
                                 className={classes.Textarea}
-                                placeholder="Описание" />
+                                placeholder="Описание"
+                                {...modalForm.register("description")} />
 
                             <div className={classes.ButtonsContainer}>
-                                <Select values={status} name={"status"} />
-                                <Select values={priority} name={"priority"} />
-                                {usersMap && <Select values={usersMap} name={"assignedToUserId"} />}
-                                <Dialog.Close asChild>
-                                    <Button>Сохранить</Button>
-                                </Dialog.Close>
+                                <div className={classes.Row}>
+                                    {children}
+                                </div>
+                                <div className={classes.Row}>
+                                    <Select values={status} name={"status"} />
+                                    <Select values={priority} name={"priority"} />
+                                    {usersMap && <Select values={usersMap} name={"assignedToUserId"} />}
+
+                                    <Button type="submit">Сохранить</Button>
+                                </div>
                             </div>
-                            <Dialog.Close asChild>
-                                <button className={classes.IconButton} aria-label="Close">
-                                    <Cross2Icon />
-                                </button>
-                            </Dialog.Close>
-                        </Dialog.Content>
-                    </Dialog.Portal>
-                </Dialog.Root>
-            </form>
-        </FormProvider>
+                        </form>
+                    </FormProvider>
+                </Dialog.Content>
+            </Dialog.Portal>
+        </Dialog.Root>
+
     );
 };
 
