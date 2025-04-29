@@ -1,8 +1,8 @@
 import * as RadixSelect from "@radix-ui/react-select";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { createUseStyles } from "react-jss";
-import {flexCenter} from "../../shared/styles/mixins.ts";
-import {ITheme} from "../../shared/styles/themes.ts";
+import {flexCenter} from "../styles/mixins.ts";
+import {ITheme} from "../styles/themes.ts";
 import {FC} from "react";
 import {CheckIcon} from "@radix-ui/react-icons";
 import {useController, useFormContext} from "react-hook-form";

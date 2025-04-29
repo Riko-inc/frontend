@@ -1,12 +1,12 @@
 import {ITaskResponse} from "../../shared/types.ts";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {api} from "../../app/contexts/AuthContext.tsx";
+import {api} from "../../app";
 import {API_ENDPOINTS} from "../../shared/config.ts";
 import {useEffect, useState} from "react";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import {flexRow} from "../../shared/styles/mixins.ts";
-import Select from "./Select.tsx";
+import Select from "../../shared/ui/Select.tsx";
 import {useUsers} from "./lib.ts";
 import {FormProvider, useForm, useWatch} from "react-hook-form";
 import TaskDialog from "./TaskDialog.tsx";
@@ -19,14 +19,12 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         ...flexRow,
         border: `1px solid ${theme.colors.neutral}`,
         cursor: "pointer",
-        // "&:hover": {
-        //     backgroundColor: theme.colors.neutral,
-        // },
 
+        backgroundColor: theme.colors.background,
+        color: theme.colors.text,
         height: '50px',
         display: 'flex',
         justifyContent: 'space-between',
-
         padding: '10px',
 
     },

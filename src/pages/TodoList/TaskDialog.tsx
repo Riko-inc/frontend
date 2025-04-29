@@ -1,6 +1,6 @@
 import {FormProvider, useForm} from "react-hook-form";
 import {ITaskResponse} from "../../shared/types.ts";
-import Select from "./Select.tsx";
+import Select from "../../shared/ui/Select.tsx";
 import {useUsers} from "./lib.ts";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";

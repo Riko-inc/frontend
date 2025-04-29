@@ -12,15 +12,12 @@ const useStyles = createUseStyles((theme: ITheme) => ({
     button: ({ fontSize, minWidth }: StyleProps) => {
         const baseFontSize = fontSize || theme.typography.fontSize.medium;
 
-        const verticalPadding = `calc(${baseFontSize} * 0.5)`;
-        const horizontalPadding = `calc(${baseFontSize} * 0.7)`;
-
         return {
             backgroundColor: theme.colors.primary,
             color: "white",
             cursor: "pointer",
             border: "none",
-            borderRadius: `calc(${baseFontSize} * 0.5)`,
+            borderRadius: "0.5em",
             transition: "all 0.2s ease",
 
             "&:hover": {
@@ -31,7 +28,7 @@ const useStyles = createUseStyles((theme: ITheme) => ({
             },
 
             fontSize: baseFontSize,
-            padding: `${verticalPadding} ${horizontalPadding}`,
+            padding: "0.5em 0.7em",
             margin: theme.spacing.xs,
             minWidth: minWidth || "fit-content",
         };

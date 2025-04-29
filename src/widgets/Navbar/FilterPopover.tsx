@@ -77,9 +77,9 @@ const useStyles = createUseStyles((theme: ITheme) => ({
         maxHeight: '400px',
         borderRadius: '6px',
         overflowY: "auto",
-        '&::-webkit-scrollbar': {
-            display: 'none',
-        },
+        // '&::-webkit-scrollbar': {
+        //     display: 'none',
+        // },
 
         backgroundColor: theme.colors.background,
     },
@@ -92,7 +92,7 @@ const deafultFilterValues: IFilterValues = {
     createdByUserId: []
 }
 
-const FilterBar = () => {
+const FilterPopover = () => {
     const classes = useStyles();
     const {data: users} = useUsers()
     const filterForm = useForm({
@@ -164,4 +164,4 @@ const FilterBar = () => {
     );
 };
 
-export default FilterBar;
+export default FilterPopover;

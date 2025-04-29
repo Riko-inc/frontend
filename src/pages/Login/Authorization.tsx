@@ -1,9 +1,8 @@
 import {FieldValues, FormProvider, useForm} from "react-hook-form";
-import {api, useAuth} from "../../app/contexts/AuthContext.tsx";
+import {api, useAuth, ROUTES} from "../../app";
 import {useNavigate} from "react-router-dom";
 import {IUser} from "./types.ts";
 import {useMutation} from "@tanstack/react-query";
-import {ROUTES} from "../../app/routes/Routes.tsx";
 import {API_ENDPOINTS} from "../../shared/config.ts";
 import {createUseStyles} from "react-jss";
 import {flexCenter} from "../../shared/styles/mixins.ts";

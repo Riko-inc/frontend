@@ -1,6 +1,5 @@
 
 import AuthProvider from "./contexts/AuthContext.tsx";
-
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import "@radix-ui/themes/styles.css";
 import { Theme } from "@radix-ui/themes";
@@ -54,5 +53,6 @@ function App() {
         </QueryClientProvider>
     )
 }
+
 
 export default App

@@ -13,9 +13,6 @@ const useStyles = createUseStyles((theme: ITheme) => ({
     input: ({ fontSize, minWidth }: StyleProps) => {
         const baseFontSize = fontSize || theme.typography.fontSize.medium;
 
-        const verticalPadding = `calc(${baseFontSize} * 0.75)`;
-        const horizontalPadding = `calc(${baseFontSize} * 1)`;
-
         return {
             backgroundColor: theme.colors.background,
             color: theme.colors.text,
@@ -26,7 +23,7 @@ const useStyles = createUseStyles((theme: ITheme) => ({
             },
 
             border: `1px solid ${theme.colors.neutral}`,
-            borderRadius: `calc(${baseFontSize} * 0.5)`,
+            borderRadius: "0.5em",
             "&:hover": {
                 boxShadow: `0 0 5px ${theme.colors.neutral}`,
             },
@@ -36,7 +33,7 @@ const useStyles = createUseStyles((theme: ITheme) => ({
 
             fontSize: baseFontSize,
             margin: theme.spacing.sm,
-            padding: `${verticalPadding} ${horizontalPadding}`,
+            padding: "0.75em 1em",
             minWidth: minWidth || "fit-content",
             fontFamily: theme.typography.fontFamily,
             fontWeight: theme.typography.fontWeight,

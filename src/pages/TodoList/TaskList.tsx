@@ -1,6 +1,6 @@
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {IFilterValues, ITaskResponse} from "../../shared/types.ts";
-import {api, useAuth} from "../../app/contexts/AuthContext.tsx";
+import {api, useAuth} from "../../app";
 import {API_ENDPOINTS} from "../../shared/config.ts";
 import Task from "./Task.tsx";
 import {useEffect} from "react";
@@ -69,8 +69,6 @@ const TaskList = () => {
 
     return (
         <>
-            <button onClick={() => console.log(filters)}>Что</button>
-
             {tasks?.pages?.flat().map((task) => (
                 <div key={task.taskId}>
                     <Task task={task} />

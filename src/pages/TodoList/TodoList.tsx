@@ -1,5 +1,6 @@
 import TaskList from "./TaskList.tsx";
-import Navbar from "../../widgets/navbar/Navbar.tsx";
+import {Navbar} from "../../widgets/Navbar";
+
 
 
 const TodoList = () => {

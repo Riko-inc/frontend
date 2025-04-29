@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import {api} from "../../app/contexts/AuthContext.tsx";
+import {api} from "../../app";
 import {API_ENDPOINTS} from "../../shared/config.ts";
 
 interface IUserServerData {

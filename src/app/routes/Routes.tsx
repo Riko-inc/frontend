@@ -1,12 +1,11 @@
 import {ProtectedRoute} from "./ProtectedRoute.tsx";
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {RouteForNotAuthenticated} from "./RouteForNotAuthenticated.tsx";
-import Authorization from "../../pages/Login/Authorization.tsx";
-import Registration from "../../pages/Login/Registration.tsx";
 import Main from "../../pages/Main/Main.tsx";
-
 import Page404 from "../../pages/Page404/Page404.tsx";
-import TodoList from "../../pages/TodoList/TodoList.tsx";
+import {TodoList} from "../../pages/TodoList";
+import {Authorization, Registration} from "../../pages/Login";
+
 
 
 const envVar: string = "/frontend"

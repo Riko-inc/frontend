@@ -3,10 +3,10 @@ import {flexCenter, flexRow} from "../../shared/styles/mixins.ts";
 import {ITheme} from "../../shared/styles/themes.ts";
 import { CgProfile } from "react-icons/cg";
 import { TbGridDots } from "react-icons/tb";
-import {ROUTES} from "../../app/routes/Routes.tsx";
+import {ROUTES} from "../../app";
 import {useNavigate} from "react-router-dom";
 import CreateTaskForm from "../../pages/TodoList/CreateTaskForm.tsx";
-import FilterBar from "./FilterBar.tsx";
+import FilterPopover from "./FilterPopover.tsx";
 
 const useStyles = createUseStyles((theme: ITheme) => ({
     container: {
@@ -52,7 +52,7 @@ const Navbar = () => {
                     </div>
                 </div>
                 <div className={classes.row}>
-                    <FilterBar />
+                    <FilterPopover />
                     <CreateTaskForm />
                     <div className={classes.icon}>
                         <CgProfile size={35} />

@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom";
-import {ROUTES} from "../../app/routes/Routes.tsx";
+import {ROUTES} from "../../app";
 
 const Page404 = () => {
 

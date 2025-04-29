@@ -3,7 +3,7 @@ import TaskDialog from "./TaskDialog.tsx";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {ITaskRequest} from "../../shared/types.ts";
 import {format} from "date-fns";
-import {api} from "../../app/contexts/AuthContext.tsx";
+import {api} from "../../app";
 import {API_ENDPOINTS} from "../../shared/config.ts";
 
 const CreateTaskForm = () => {
