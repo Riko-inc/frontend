@@ -1,14 +1,13 @@
-import {ITaskRequest, ITaskResponse} from "../../shared/types.ts";
+import {ITaskResponse} from "../../shared/types.ts";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../../app/contexts/AuthContext.tsx";
 import {API_ENDPOINTS} from "../../shared/config.ts";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import {flexRow} from "../../shared/styles/mixins.ts";
 import Select from "./Select.tsx";
 import {useUsers} from "./lib.ts";
-import Button from "../../shared/ui/Button.tsx";
 import {FormProvider, useForm, useWatch} from "react-hook-form";
 import TaskDialog from "./TaskDialog.tsx";
 import {format} from "date-fns";
@@ -54,6 +53,8 @@ const useStyles = createUseStyles((theme: ITheme) => ({
 const Task = ({ task }: {task: ITaskResponse}) => {
     const classes = useStyles();
     const queryClient = useQueryClient();
+    const [open, setOpen] = useState(false);
+
     const formattedTask = {
         ...task,
         assignedToUserId: task.assignedToUserId ? String(task.assignedToUserId) : "null",
@@ -61,10 +62,9 @@ const Task = ({ task }: {task: ITaskResponse}) => {
     const mainForm = useForm<ITaskResponse>({
         defaultValues: formattedTask,
     })
-    const { control } = mainForm
-    // const watchedValues = useWatch({ control });
+
     const formValues = useWatch<ITaskResponse>({ control: mainForm.control });
-    // const [error, setError] = useState(false)
+
 
     useEffect(() => {
         if (task) {
@@ -72,9 +72,14 @@ const Task = ({ task }: {task: ITaskResponse}) => {
         }
     }, [task])
 
+    const [isUserAction, setIsUserAction] = useState(false);
 
-
-
+    useEffect(() => {
+        if (isUserAction) {
+            editTaskMutation.mutate(formValues as ITaskResponse);
+            setIsUserAction(false);
+        }
+    }, [formValues, isUserAction]);
 
     const priority = {
         DEFAULT: "Обычный",
@@ -91,7 +96,6 @@ const Task = ({ task }: {task: ITaskResponse}) => {
     const usersMap = users ? Object.fromEntries([["null", "Без жертвы"], ...users.map(user =>
             [String(user.id), `Чел №${user.id}`])]) : undefined
 
-    const [open, setOpen] = useState(false);
 
     const editTaskMutation = useMutation({
         mutationFn: (newTask: ITaskResponse) => {
@@ -103,9 +107,10 @@ const Task = ({ task }: {task: ITaskResponse}) => {
             })
         },
         onSuccess: () => {
+            setOpen(false)
             console.log("задача изменена")
             queryClient.invalidateQueries({ queryKey: ['tasks'] })
-            setOpen(false)
+
         },
         onError: (error) => {
             console.error(error);
@@ -121,14 +126,16 @@ const Task = ({ task }: {task: ITaskResponse}) => {
                     <span className={classes.title}>{task.title}</span>
                 </div>
                 <div className={classes.row}>
-                    <Select values={status} name={"status"} />
-                    <Select values={priority} name={"priority"} />
-                    {usersMap && <Select values={usersMap} name={"assignedToUserId"} />}
-
+                    <Select values={status} name={"status"}
+                            setIsUserActionTrue={() => setIsUserAction(true)} />
+                    <Select values={priority} name={"priority"}
+                            setIsUserActionTrue={() => setIsUserAction(true)} />
+                    {usersMap && <Select values={usersMap} name={"assignedToUserId"}
+                                         setIsUserActionTrue={() => setIsUserAction(true)} />}
 
                     <div className={classes.dialog}>
                         <TaskDialog task={formattedTask} open={open}
-                                    onClose={() => setOpen(false)}
+                                    onOpenChange={() => setOpen(false)}
                                     taskMutationFunction={editTaskMutation.mutate}
                                     title="Изменить задачу"
                                     triggerText="Изменить задачу"
@@ -136,13 +143,9 @@ const Task = ({ task }: {task: ITaskResponse}) => {
                             <DeleteButton taskId={task.taskId} />
                         </TaskDialog>
                     </div>
-
-
                 </div>
             </div>
         </FormProvider>
-
-
     )
 }
 

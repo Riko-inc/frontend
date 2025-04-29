@@ -31,7 +31,7 @@ const CreateTaskForm = () => {
     return (
         <div onClick={() => setOpen(true)}>
             <TaskDialog open={open}
-                        onClose={() => setOpen(false)}
+                        onOpenChange={() => setOpen(false)}
                         taskMutationFunction={createTaskMutation.mutate}
                         triggerText="Создать задачу"
                         title="Создать задачу"

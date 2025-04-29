@@ -1,10 +1,10 @@
-import { Input as HeadlessInput } from "@headlessui/react"
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../styles/themes.ts";
 import {FC, useState} from "react";
 import {useFormContext} from "react-hook-form";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import {flexCenter} from "../styles/mixins.ts";
+import clsx from "clsx";
 
 interface StyleProps {
     fontSize?: InputProps['fontSize'];
@@ -64,9 +64,10 @@ interface InputProps {
     required?: boolean | string;
     fontSize?: string
     minWidth?: string
+    className?: string
 }
 
-const Input: FC<InputProps> = ({placeholder, fontSize, minWidth, name, required}) => {
+const Input: FC<InputProps> = ({placeholder, fontSize, minWidth, name, required, className}) => {
     const classes = useStyles({fontSize, minWidth});
     const [passwordIsHidden, setPasswordIsHidden] = useState(true);
     const { register, formState: { errors } } = useFormContext();
@@ -77,12 +78,11 @@ const Input: FC<InputProps> = ({placeholder, fontSize, minWidth, name, required}
 
     return (
         <div className={classes.inputContainer}>
-            <HeadlessInput
-                className={classes.input}
+            <input
+                className={clsx(classes.input, className)}
                 placeholder={placeholder}
                 type={passwordIsHidden ? 'password' : 'text'}
-                {...register(name, {required})}
-            />
+                {...register(name, {required})}/>
             <div className={classes.icon} onClick={showPassword}>
                 {passwordIsHidden ? <FaRegEyeSlash /> : <FaRegEye />}
             </div>

@@ -6,7 +6,6 @@ import Registration from "../../pages/Login/Registration.tsx";
 import Main from "../../pages/Main/Main.tsx";
 
 import Page404 from "../../pages/Page404/Page404.tsx";
-import TokenTestPage from "../../pages/Main/TokenTestPage.tsx";
 import TodoList from "../../pages/TodoList/TodoList.tsx";
 
 
@@ -27,10 +26,6 @@ const Routes = () => {
         {
             path: ROUTES.ABOUT,
             element: <div>About</div>
-        },
-        {
-            path: ROUTES.TEST,
-            element: <TokenTestPage />
         }
     ]
 

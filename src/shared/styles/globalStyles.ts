@@ -26,5 +26,6 @@ export const useGlobalStyles = createUseStyles((theme: ITheme) => ({
             backgroundColor: '#0236a0',
             color: 'inherit',
         },
+
     },
 }));

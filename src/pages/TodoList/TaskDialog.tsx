@@ -1,19 +1,14 @@
 import {FormProvider, useForm} from "react-hook-form";
-import {ITaskRequest, ITaskResponse} from "../../shared/types.ts";
+import {ITaskResponse} from "../../shared/types.ts";
 import Select from "./Select.tsx";
 import {useUsers} from "./lib.ts";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import { Dialog } from "radix-ui";
-import {Cross2Icon} from "@radix-ui/react-icons";
-import {FC, ReactNode, useEffect, useState} from "react";
+import {FC, ReactNode, useEffect} from "react";
 import Input from "../../shared/ui/Input.tsx";
 import {flexCenter, flexRow} from "../../shared/styles/mixins.ts";
 import Button from "../../shared/ui/Button.tsx";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
-import {format} from "date-fns";
-import {api} from "../../app/contexts/AuthContext.tsx";
-import {API_ENDPOINTS} from "../../shared/config.ts";
 
 
 const useStyles = createUseStyles((theme: ITheme) => ({
@@ -121,14 +116,14 @@ interface TaskDialogProps {
     children?: ReactNode
     task?: ITaskResponse,
     open: boolean
-    onClose: () => void
+    onOpenChange: () => void
     taskMutationFunction: (task: ITaskResponse) => void;
     triggerText?: string
     title?: string
     description?: string
 }
 
-const TaskDialog: FC<TaskDialogProps> = ({ children, task, open, onClose, taskMutationFunction,
+const TaskDialog: FC<TaskDialogProps> = ({ children, task, open, onOpenChange, taskMutationFunction,
                                          triggerText, title, description}) => {
     const classes = useStyles();
 
@@ -152,7 +147,7 @@ const TaskDialog: FC<TaskDialogProps> = ({ children, task, open, onClose, taskMu
     });
 
     useEffect(() => {
-        if (open && task) {
+        if (!open && task) {
             modalForm.reset(task);
         }
         if (open && !task) {
@@ -166,10 +161,6 @@ const TaskDialog: FC<TaskDialogProps> = ({ children, task, open, onClose, taskMu
             });
         }
     }, [open, task]);
-    //
-    // useEffect(() => {
-    //     setOpen(false)
-    // }, [task]);
 
 
     const onSubmit = (data: ITaskResponse) => {
@@ -179,7 +170,7 @@ const TaskDialog: FC<TaskDialogProps> = ({ children, task, open, onClose, taskMu
     }
 
     return (
-        <Dialog.Root open={open} onOpenChange={onClose}>
+        <Dialog.Root open={open} onOpenChange={onOpenChange}>
             <Dialog.Trigger asChild>
                 <Button fontSize="14px">{triggerText}</Button>
             </Dialog.Trigger>
@@ -220,11 +211,6 @@ const TaskDialog: FC<TaskDialogProps> = ({ children, task, open, onClose, taskMu
                             </div>
                         </form>
                     </FormProvider>
-                    <Dialog.Close asChild>
-                        <button className={classes.IconButton} onClick={onClose} aria-label="Close">
-                            <Cross2Icon />
-                        </button>
-                    </Dialog.Close>
                 </Dialog.Content>
             </Dialog.Portal>
         </Dialog.Root>

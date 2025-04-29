@@ -44,7 +44,9 @@ const DeleteButton: FC<DeleteButtonProps> = ({taskId, onClose}) => {
 
     return (
         <>
-            <Button fontSize="16px" onClick={deleteTask} className={classes.button}>Удалить</Button>
+            <Button fontSize="16px" onClick={deleteTask}
+                    type="button"
+                    className={classes.button}>Удалить</Button>
         </>
     );
 };
