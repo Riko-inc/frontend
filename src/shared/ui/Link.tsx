@@ -1,6 +1,7 @@
-import {createUseStyles} from "react-jss";
-import {ITheme} from "../styles/themes.ts";
-import {FC, LinkHTMLAttributes, ReactNode} from "react";
+import { createUseStyles } from "react-jss";
+import { ITheme } from "../styles/themes.ts";
+import { FC, ReactNode } from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 const useStyles = createUseStyles((theme: ITheme) => ({
     link: {
@@ -16,17 +17,24 @@ const useStyles = createUseStyles((theme: ITheme) => ({
     }
 }));
 
-interface LinkProps extends LinkHTMLAttributes<HTMLAnchorElement> {
-    children: ReactNode,
+interface LinkProps {
+    children: ReactNode
+    to: string
+    onClick?: () => void;
 }
 
-const Link: FC<LinkProps> = ({children, ...props}) => {
+const Link: FC<LinkProps> = ({ children, to, onClick, ...props }) => {
     const classes = useStyles();
 
     return (
-        <>
-            <a className={classes.link} {...props}>{children}</a>
-        </>
+        <RouterLink
+            className={classes.link}
+            to={to}
+            onClick={onClick}
+            {...props}
+        >
+            {children}
+        </RouterLink>
     );
 };
 

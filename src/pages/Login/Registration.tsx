@@ -71,7 +71,8 @@ const Registration = () => {
                     >{sendUserMutation.isPending ? 'Создание...' : 'Зарегистрироваться'}</Button>
                 </form>
             </FormProvider>
-            <Link onClick={() => navigate(ROUTES.LOGIN)}>Авторизоваться</Link>
+            {/*<Link onClick={() => navigate(ROUTES.LOGIN)}>Авторизоваться</Link>*/}
+            <Link to={ROUTES.LOGIN}>Авторизоваться</Link>
         </div>
     )
 }
