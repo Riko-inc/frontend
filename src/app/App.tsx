@@ -41,13 +41,13 @@ function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <Provider store={store}>
-                <AuthProvider>
-                    <Theme>
-                        <ThemeProvider theme={lightTheme}>
-                            <Routes />
-                        </ThemeProvider>
-                    </Theme>
-                </AuthProvider>
+                <ThemeProvider theme={lightTheme}>
+                    <AuthProvider>
+                        <Theme>
+                            <Routes/>
+                        </Theme>
+                    </AuthProvider>
+                </ThemeProvider>
             </Provider>
             {/*<ReactQueryDevtools initialIsOpen={false} />*/}
         </QueryClientProvider>
