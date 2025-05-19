@@ -1,7 +1,7 @@
 import {ITaskResponse} from "../../shared/types.ts";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../../app";
-import {API_ENDPOINTS} from "../../shared/config.ts";
+import {API_ENDPOINTS} from "../../shared/endpoints.ts";
 import {useEffect, useState} from "react";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";

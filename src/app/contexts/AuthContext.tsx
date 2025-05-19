@@ -3,7 +3,7 @@ import {useQueryClient} from "@tanstack/react-query";
 import axios from "axios";
 import {IJwtTokens} from "../../pages/Login/types.ts";
 import {jwtDecode} from "jwt-decode";
-import {API_ENDPOINTS} from "../../shared/config.ts";
+import {API_ENDPOINTS} from "../../shared/endpoints.ts";
 
 
 interface IAuthContext {

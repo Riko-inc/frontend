@@ -4,7 +4,7 @@ import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {ITaskRequest} from "../../shared/types.ts";
 import {format} from "date-fns";
 import {api} from "../../app";
-import {API_ENDPOINTS} from "../../shared/config.ts";
+import {API_ENDPOINTS} from "../../shared/endpoints.ts";
 
 const CreateTaskForm = () => {
     const [open, setOpen] = useState(false);

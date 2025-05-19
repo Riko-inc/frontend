@@ -1,12 +1,19 @@
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {IFilterValues, ITaskResponse} from "../../shared/types.ts";
 import {api, useAuth} from "../../app";
-import {API_ENDPOINTS} from "../../shared/config.ts";
+import {API_ENDPOINTS} from "../../shared/endpoints.ts";
 import Task from "./Task.tsx";
 import {useEffect} from "react";
 import {useInView} from "react-intersection-observer";
-import {useAppSelector} from "../../shared/store/redux.ts";
+import {createUseStyles} from "react-jss";
 
+const useStyles = createUseStyles(() => ({
+    refDiv: {
+        width: "100%",
+        height: "0px",
+        // border: `1px solid ${theme.colors.background}`,
+    }
+}))
 
 interface IDataResponse {
     pageParam: number[],
@@ -15,12 +22,10 @@ interface IDataResponse {
 
 const TASKS_PER_PAGE: number = 50;
 
-const TaskList = () => {
-
+const TaskList = ({ filters }: {filters: IFilterValues}) => {
+    const classes = useStyles();
     const { userId } = useAuth()
-
-    const filters = useAppSelector((state) => state.filters);
-
+    // console.log("tasklist filters", filters)
     const { ref, inView } = useInView();
 
     const fetchTasks =
@@ -75,8 +80,8 @@ const TaskList = () => {
                 </div>
             ))}
 
-            <div ref={ref}>
-                {isFetchingNextPage ? 'Загрузка...' : hasNextPage ? 'Прокрутите вниз' : 'Все задачи загружены'}
+            <div ref={ref} className={classes.refDiv}>
+                {/*{isFetchingNextPage ? 'Загрузка...' : hasNextPage ? 'Прокрутите вниз' : 'Все задачи загружены'}*/}
             </div>
         </>
     )
