@@ -5,7 +5,15 @@ import {API_ENDPOINTS} from "../../shared/endpoints.ts";
 import Task from "./Task.tsx";
 import {useEffect} from "react";
 import {useInView} from "react-intersection-observer";
+import {createUseStyles} from "react-jss";
 
+const useStyles = createUseStyles(() => ({
+    refDiv: {
+        width: "100%",
+        height: "0px",
+        // border: `1px solid ${theme.colors.background}`,
+    }
+}))
 
 interface IDataResponse {
     pageParam: number[],
@@ -15,9 +23,9 @@ interface IDataResponse {
 const TASKS_PER_PAGE: number = 50;
 
 const TaskList = ({ filters }: {filters: IFilterValues}) => {
-
+    const classes = useStyles();
     const { userId } = useAuth()
-    console.log("tasklist filters", filters)
+    // console.log("tasklist filters", filters)
     const { ref, inView } = useInView();
 
     const fetchTasks =
@@ -72,8 +80,8 @@ const TaskList = ({ filters }: {filters: IFilterValues}) => {
                 </div>
             ))}
 
-            <div ref={ref}>
-                {isFetchingNextPage ? 'Загрузка...' : hasNextPage ? 'Прокрутите вниз' : 'Все задачи загружены'}
+            <div ref={ref} className={classes.refDiv}>
+                {/*{isFetchingNextPage ? 'Загрузка...' : hasNextPage ? 'Прокрутите вниз' : 'Все задачи загружены'}*/}
             </div>
         </>
     )

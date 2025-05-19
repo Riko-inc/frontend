@@ -13,11 +13,12 @@ import Checkbox from "../../shared/ui/Checkbox.tsx";
 
 const useStyles = createUseStyles((theme: ITheme) => ({
     filterButton: {
-        fontSize: theme.typography.fontSize.medium,
+        fontSize: '14px',
         backgroundColor: theme.colors.background,
         border: `1px solid ${theme.colors.neutral}`,
         borderRadius: "8px",
-        padding: theme.spacing.xs,
+        padding: `${theme.spacing.xs} ${theme.spacing.sm}`,
+        // padding: "0.5em 0.7em",
         margin: theme.spacing.xs,
 
         "&:hover": {

@@ -1,11 +1,9 @@
-import TaskList from "./TaskList.tsx";
 import {Navbar} from "../../widgets/Navbar";
 import {useAppDispatch, useAppSelector} from "../../shared/store/hooks/redux.ts";
 import {useUsers} from "./lib.ts";
 import {setSettings} from "../../shared/store/settingsSlice.ts";
-import {TStatus} from "../../shared/types.ts";
 import {useEffect} from "react";
-
+import TaskModules from "./TaskModules.tsx";
 
 const TodoList = () => {
 
@@ -31,25 +29,16 @@ const TodoList = () => {
             priority,
             users: usersMap ?? {},
         }));
-    }, [dispatch, status, priority, usersMap]);
+    }, []);
 
-    const filters = useAppSelector((state) => state.filters);
-
-    const noStatusChosen = filters.status.length === 0
+    const filters = useAppSelector(state => state.filters);
 
     return (
         <>
             <Navbar />
-
             {Object.entries(status).map(([statusKey, statusLabel]) => (
                 <div key={statusKey}>
-                    <p>{statusLabel}</p>
-                    {(noStatusChosen || filters.status.includes(statusKey as TStatus)) &&
-                        <TaskList filters={{
-                            ...filters,
-                            status: [statusKey as TStatus]
-                        }} />
-                    }
+                    <TaskModules statusKey={statusKey} statusLabel={statusLabel} filters={filters} />
                 </div>
             ))}
         </>
