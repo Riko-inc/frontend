@@ -4,7 +4,7 @@ import {ITheme} from "../../shared/styles/themes.ts";
 import {flexCenter} from "../../shared/styles/mixins.ts";
 
 import {FormProvider, useForm} from "react-hook-form";
-import {useAppDispatch} from "../../shared/store/redux.ts";
+import {useAppDispatch} from "../../shared/store/hooks/redux.ts";
 import {IFilterValues} from "../../shared/types.ts";
 import {useEffect} from "react";
 import {setFilters} from "../../shared/store/filterSlice.ts";

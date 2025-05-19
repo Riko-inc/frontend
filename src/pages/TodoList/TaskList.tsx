@@ -1,11 +1,10 @@
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {IFilterValues, ITaskResponse} from "../../shared/types.ts";
 import {api, useAuth} from "../../app";
-import {API_ENDPOINTS} from "../../shared/config.ts";
+import {API_ENDPOINTS} from "../../shared/endpoints.ts";
 import Task from "./Task.tsx";
 import {useEffect} from "react";
 import {useInView} from "react-intersection-observer";
-import {useAppSelector} from "../../shared/store/redux.ts";
 
 
 interface IDataResponse {
@@ -15,12 +14,10 @@ interface IDataResponse {
 
 const TASKS_PER_PAGE: number = 50;
 
-const TaskList = () => {
+const TaskList = ({ filters }: {filters: IFilterValues}) => {
 
     const { userId } = useAuth()
-
-    const filters = useAppSelector((state) => state.filters);
-
+    console.log("tasklist filters", filters)
     const { ref, inView } = useInView();
 
     const fetchTasks =

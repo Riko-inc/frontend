@@ -1,6 +1,6 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {api} from "../../app";
-import {API_ENDPOINTS} from "../../shared/config.ts";
+import {API_ENDPOINTS} from "../../shared/endpoints.ts";
 import {FC} from "react";
 import Button from "../../shared/ui/Button.tsx";
 import {createUseStyles} from "react-jss";
