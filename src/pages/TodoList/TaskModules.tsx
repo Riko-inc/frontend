@@ -46,7 +46,6 @@ const TaskModules = ({filters, statusKey, statusLabel}: TaskModulesProps) => {
         <>
             <Collapsible.Root open={open} onOpenChange={setOpen}>
                 <div className={classes.Container}>
-
                     <Collapsible.Trigger asChild>
                         <span className={classes.Title}>
                             {statusLabel}

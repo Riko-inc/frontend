@@ -4,6 +4,7 @@ import {useUsers} from "./lib.ts";
 import {setSettings} from "../../shared/store/settingsSlice.ts";
 import {useEffect} from "react";
 import TaskModules from "./TaskModules.tsx";
+import {DndContext} from "@dnd-kit/core";
 
 const TodoList = () => {
 
@@ -33,14 +34,18 @@ const TodoList = () => {
 
     const filters = useAppSelector(state => state.filters);
 
+
     return (
         <>
             <Navbar />
-            {Object.entries(status).map(([statusKey, statusLabel]) => (
-                <div key={statusKey}>
-                    <TaskModules statusKey={statusKey} statusLabel={statusLabel} filters={filters} />
-                </div>
-            ))}
+            <DndContext>
+                {Object.entries(status).map(([statusKey, statusLabel]) => (
+                    <div key={statusKey}>
+                        <TaskModules statusKey={statusKey} statusLabel={statusLabel} filters={filters} />
+                    </div>
+                ))}
+            </DndContext>
+
         </>
     )
 }

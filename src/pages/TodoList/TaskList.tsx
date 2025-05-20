@@ -6,6 +6,7 @@ import Task from "./Task.tsx";
 import {useEffect} from "react";
 import {useInView} from "react-intersection-observer";
 import {createUseStyles} from "react-jss";
+import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable";
 
 const useStyles = createUseStyles(() => ({
     refDiv: {
@@ -72,13 +73,19 @@ const TaskList = ({ filters }: {filters: IFilterValues}) => {
 
     if (error) return <div>Ошибка: {error.message}</div>;
 
+    const taskList = tasks?.pages?.flat();
+
     return (
         <>
-            {tasks?.pages?.flat().map((task) => (
-                <div key={task.taskId}>
-                    <Task task={task} />
-                </div>
-            ))}
+            {taskList &&
+                <SortableContext items={taskList.map(task => task.taskId)} strategy={verticalListSortingStrategy}>
+                    {taskList.map((task) => (
+                        <div key={task.taskId}>
+                            <Task task={task} />
+                        </div>
+                    ))}
+                </SortableContext>
+            }
 
             <div ref={ref} className={classes.refDiv}>
                 {/*{isFetchingNextPage ? 'Загрузка...' : hasNextPage ? 'Прокрутите вниз' : 'Все задачи загружены'}*/}

@@ -12,6 +12,7 @@ import {FormProvider, useForm, useWatch} from "react-hook-form";
 import TaskDialog from "./TaskDialog.tsx";
 import {format} from "date-fns";
 import DeleteButton from "./DeleteButton.tsx";
+import SortableItem from "./SortableItem.tsx";
 
 
 const useStyles = createUseStyles((theme: ITheme) => ({
@@ -117,33 +118,36 @@ const Task = ({ task }: {task: ITaskResponse}) => {
 
 
     return (
-        <FormProvider {...mainForm}>
-            <div className={classes.taskContainer} onClick={() => setOpen(true)}>
-                <div className={classes.row}>
-                    <p className={classes.number}>DEV-1</p>
-                    <span className={classes.title}>{task.title}</span>
-                </div>
-                <div className={classes.row}>
-                    <Select values={status} name={"status"}
-                            setIsUserActionTrue={() => setIsUserAction(true)} />
-                    <Select values={priority} name={"priority"}
-                            setIsUserActionTrue={() => setIsUserAction(true)} />
-                    {usersMap && <Select values={usersMap} name={"assignedToUserId"}
-                                         setIsUserActionTrue={() => setIsUserAction(true)} />}
+        <SortableItem id={ task.taskId }>
+            <FormProvider {...mainForm}>
+                <div className={classes.taskContainer} onClick={() => setOpen(true)}>
+                    <div className={classes.row}>
+                        <p className={classes.number}>DEV-1</p>
+                        <span className={classes.title}>{task.title}</span>
+                    </div>
+                    <div className={classes.row}>
+                        <Select values={status} name={"status"}
+                                setIsUserActionTrue={() => setIsUserAction(true)} />
+                        <Select values={priority} name={"priority"}
+                                setIsUserActionTrue={() => setIsUserAction(true)} />
+                        {usersMap && <Select values={usersMap} name={"assignedToUserId"}
+                                             setIsUserActionTrue={() => setIsUserAction(true)} />}
 
-                    <div className={classes.dialog}>
-                        <TaskDialog task={formattedTask} open={open}
-                                    onOpenChange={() => setOpen(false)}
-                                    taskMutationFunction={editTaskMutation.mutate}
-                                    title="Изменить задачу"
-                                    triggerText="Изменить задачу"
-                                    description="Отредактируйте необходимые поля">
-                            <DeleteButton taskId={task.taskId} />
-                        </TaskDialog>
+                        <div className={classes.dialog}>
+                            <TaskDialog task={formattedTask} open={open}
+                                        onOpenChange={() => setOpen(false)}
+                                        taskMutationFunction={editTaskMutation.mutate}
+                                        title="Изменить задачу"
+                                        triggerText="Изменить задачу"
+                                        description="Отредактируйте необходимые поля">
+                                <DeleteButton taskId={task.taskId} />
+                            </TaskDialog>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </FormProvider>
+            </FormProvider>
+        </SortableItem>
+
     )
 }
 
