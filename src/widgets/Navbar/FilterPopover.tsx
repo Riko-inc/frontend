@@ -8,7 +8,7 @@ import {useAppDispatch} from "../../shared/store/hooks/redux.ts";
 import {IFilterValues} from "../../shared/types.ts";
 import {useEffect} from "react";
 import {setFilters} from "../../shared/store/filterSlice.ts";
-import {useUsers} from "../../pages/TodoList/lib.ts";
+import {useUsers} from "../../pages/TodoList/lib/lib.ts";
 import Checkbox from "../../shared/ui/Checkbox.tsx";
 
 const useStyles = createUseStyles((theme: ITheme) => ({

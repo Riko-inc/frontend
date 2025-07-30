@@ -1,7 +1,7 @@
 import {useQuery} from "@tanstack/react-query";
-import {api} from "../../app";
-import {API_ENDPOINTS} from "../../shared/endpoints.ts";
-import {IUserServerData} from "../../shared/types.ts";
+import {api} from "../../../app";
+import {API_ENDPOINTS} from "../../../shared/endpoints.ts";
+import {IUserServerData} from "../../../shared/types.ts";
 
 
 

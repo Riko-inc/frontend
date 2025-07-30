@@ -20,10 +20,6 @@ const useStyles = createUseStyles(() => ({
     },
     form: {
         ...flexCenter("column"),
-    },
-    button: {
-        fontWeight: "bold",
-
     }
 }));
 

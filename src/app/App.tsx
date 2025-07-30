@@ -9,6 +9,7 @@ import {lightTheme} from "../shared/styles/themes.ts";
 import {useGlobalStyles} from "../shared/styles/globalStyles.ts";
 import {Provider} from "react-redux";
 import {setupStore} from "../shared/store/store.ts";
+import {DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 
 
 
@@ -29,6 +30,7 @@ const queryClient = new QueryClient({
 
 
 
+
 function App() {
 
     // const [currentTheme, setCurrentTheme] = useState<ITheme>(lightTheme);
@@ -36,18 +38,28 @@ function App() {
 
     const store = setupStore()
 
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                delay: 300, // Задержка в миллисекундах (1 секунда)
+                tolerance: 15, // Допустимое смещение курсора во время задержки
+            },
+        })
+    );
 
 
     return (
         <QueryClientProvider client={queryClient}>
             <Provider store={store}>
-                <ThemeProvider theme={lightTheme}>
-                    <AuthProvider>
-                        <Theme>
-                            <Routes/>
-                        </Theme>
-                    </AuthProvider>
-                </ThemeProvider>
+                <DndContext sensors={sensors}>
+                    <ThemeProvider theme={lightTheme}>
+                        <AuthProvider>
+                            <Theme>
+                                <Routes/>
+                            </Theme>
+                        </AuthProvider>
+                    </ThemeProvider>
+                </DndContext>
             </Provider>
             {/*<ReactQueryDevtools initialIsOpen={false} />*/}
         </QueryClientProvider>

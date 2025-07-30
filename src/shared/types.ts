@@ -9,6 +9,7 @@ export interface ITaskRequest {
 
 export interface ITaskResponse extends ITaskRequest {
     taskId: number,
+    position: number,
     createdByUserId: number,
     dueTo: Date,
     createdDate: string

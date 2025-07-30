@@ -2,21 +2,19 @@ import {useDroppable} from "@dnd-kit/core";
 import {FC, ReactNode} from "react";
 
 interface DroppableProps {
-    id: number;
+    id: string;
     children: ReactNode;
 }
 
 const Droppable: FC<DroppableProps> = (props) => {
-    const {isOver, setNodeRef} = useDroppable({
+    const {setNodeRef} = useDroppable({
         id: props.id,
     });
-    const style = {
-        color: isOver ? 'green' : undefined,
-    };
+
 
 
     return (
-        <div ref={setNodeRef} style={style}>
+        <div ref={setNodeRef}>
             {props.children}
         </div>
     );

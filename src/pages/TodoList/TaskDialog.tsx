@@ -1,7 +1,7 @@
 import {FormProvider, useForm} from "react-hook-form";
 import {ITaskResponse} from "../../shared/types.ts";
 import Select from "../../shared/ui/Select.tsx";
-import {useUsers} from "./lib.ts";
+import {useUsers} from "./lib/lib.ts";
 import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import { Dialog } from "radix-ui";

@@ -7,12 +7,11 @@ import {createUseStyles} from "react-jss";
 import {ITheme} from "../../shared/styles/themes.ts";
 import {flexRow} from "../../shared/styles/mixins.ts";
 import Select from "../../shared/ui/Select.tsx";
-import {useUsers} from "./lib.ts";
+import {useUsers} from "./lib/lib.ts";
 import {FormProvider, useForm, useWatch} from "react-hook-form";
 import TaskDialog from "./TaskDialog.tsx";
 import {format} from "date-fns";
 import DeleteButton from "./DeleteButton.tsx";
-import SortableItem from "./SortableItem.tsx";
 
 
 const useStyles = createUseStyles((theme: ITheme) => ({
@@ -118,7 +117,6 @@ const Task = ({ task }: {task: ITaskResponse}) => {
 
 
     return (
-        <SortableItem id={ task.taskId }>
             <FormProvider {...mainForm}>
                 <div className={classes.taskContainer} onClick={() => setOpen(true)}>
                     <div className={classes.row}>
@@ -146,7 +144,6 @@ const Task = ({ task }: {task: ITaskResponse}) => {
                     </div>
                 </div>
             </FormProvider>
-        </SortableItem>
 
     )
 }

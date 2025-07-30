@@ -7,6 +7,8 @@ import {useEffect} from "react";
 import {useInView} from "react-intersection-observer";
 import {createUseStyles} from "react-jss";
 import {SortableContext, verticalListSortingStrategy} from "@dnd-kit/sortable";
+import SortableItem from "./SortableItem.tsx";
+import getTasksWithSamePosition from "./lib/getTasksWithSamePosition.tsx";
 
 const useStyles = createUseStyles(() => ({
     refDiv: {
@@ -77,14 +79,31 @@ const TaskList = ({ filters }: {filters: IFilterValues}) => {
 
     return (
         <>
-            {taskList &&
-                <SortableContext items={taskList.map(task => task.taskId)} strategy={verticalListSortingStrategy}>
-                    {taskList.map((task) => (
-                        <div key={task.taskId}>
-                            <Task task={task} />
-                        </div>
-                    ))}
-                </SortableContext>
+            {taskList && (
+                <>
+                    <SortableContext items={taskList.map(task => task.taskId)} strategy={verticalListSortingStrategy}>
+                        {taskList.map((task, index) => {
+                            const { prevTaskArray, nextTaskArray } = getTasksWithSamePosition(taskList, index)
+
+                            return (
+                                <div key={task.taskId}>
+                                    <SortableItem
+                                        id={task.taskId}
+                                        index={index}
+                                        prevTask={taskList[index - 1] ?? null}
+                                        nextTask={taskList[index + 1] ?? null}
+                                        prevTaskArray={prevTaskArray}
+                                        nextTaskArray={nextTaskArray}
+                                        isLast={index === taskList.length - 1}
+                                    >
+                                        <Task task={task} />
+                                    </SortableItem>
+                                </div>
+                            )
+                        })}
+                    </SortableContext>
+                </>
+            )
             }
 
             <div ref={ref} className={classes.refDiv}>

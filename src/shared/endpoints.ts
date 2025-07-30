@@ -12,6 +12,7 @@ export const API_ENDPOINTS = {
     USERS: authService + "/user",
     //task-service
     GET_TASKS: taskService + "/tasks",
+    GET_TASK_BY_ID: taskService + "/task/",
     CREATE_TASK: taskService + "/task",
     EDIT_TASK: taskService + "/task",
     DELETE_TASK: taskService + "/task",
