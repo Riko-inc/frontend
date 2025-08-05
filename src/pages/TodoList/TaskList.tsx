@@ -81,27 +81,15 @@ const TaskList = ({ filters }: {filters: IFilterValues}) => {
         <>
             {taskList && (
                 <>
-                    <SortableContext items={taskList.map(task => task.taskId)} strategy={verticalListSortingStrategy}>
-                        {taskList.map((task, index) => {
-                            const { prevTaskArray, nextTaskArray } = getTasksWithSamePosition(taskList, index)
+                    {taskList.map((task, index) => {
+                        // const { prevTaskArray, nextTaskArray } = getTasksWithSamePosition(taskList, index)
 
-                            return (
-                                <div key={task.taskId}>
-                                    <SortableItem
-                                        id={task.taskId}
-                                        index={index}
-                                        prevTask={taskList[index - 1] ?? null}
-                                        nextTask={taskList[index + 1] ?? null}
-                                        prevTaskArray={prevTaskArray}
-                                        nextTaskArray={nextTaskArray}
-                                        isLast={index === taskList.length - 1}
-                                    >
-                                        <Task task={task} />
-                                    </SortableItem>
-                                </div>
-                            )
-                        })}
-                    </SortableContext>
+                        return (
+                            <div key={task.taskId}>
+                                <Task task={task} />
+                            </div>
+                        )
+                    })}
                 </>
             )
             }
@@ -112,5 +100,22 @@ const TaskList = ({ filters }: {filters: IFilterValues}) => {
         </>
     )
 }
+
+// <SortableItem
+//     id={task.taskId}
+//     index={index}
+//     prevTask={taskList[index - 1] ?? null}
+//     nextTask={taskList[index + 1] ?? null}
+//     prevTaskArray={prevTaskArray}
+//     nextTaskArray={nextTaskArray}
+//     isLast={index === taskList.length - 1}
+// >
+//
+// </SortableItem>
+
+
+// <SortableContext items={taskList.map(task => task.taskId)} strategy={verticalListSortingStrategy}>
+//
+// </SortableContext>
 
 export default TaskList;

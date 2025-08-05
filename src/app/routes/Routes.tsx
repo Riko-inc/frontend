@@ -16,6 +16,7 @@ export const ROUTES = {
     LOGIN: envVar + "/login",
     SIGNUP: envVar + "/sign-up",
     TODOLIST: envVar + "/todolist",
+    SPACE: envVar + "/space/:id",
     TEST: envVar + "/test",
 };
 

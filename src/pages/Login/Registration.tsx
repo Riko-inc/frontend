@@ -1,15 +1,14 @@
-import {FieldValues, FormProvider, useForm} from "react-hook-form";
-import {api, useAuth, ROUTES} from "../../app";
+import {FormProvider, useForm} from "react-hook-form";
+import {useAuth, ROUTES} from "../../app";
 import {useNavigate} from "react-router-dom";
 import {IUser} from "./types.ts";
-import {useMutation} from "@tanstack/react-query";
-import {API_ENDPOINTS} from "../../shared/endpoints.ts";
 import {createUseStyles} from "react-jss";
 import {flexCenter} from "../../shared/styles/mixins.ts";
 import Input from "../../shared/ui/Input.tsx";
 import PasswordInput from "../../shared/ui/PasswordInput.tsx";
 import Button from "../../shared/ui/Button.tsx";
 import Link from "../../shared/ui/Link.tsx";
+import {useSignUpUser} from "../../api/authApi.ts";
 
 
 const useStyles = createUseStyles(() => ({
@@ -25,36 +24,21 @@ const useStyles = createUseStyles(() => ({
 const Registration = () => {
 
     const classes = useStyles();
-    const methods = useForm();
+    const methods = useForm<IUser>();
 
     const { setTokens } = useAuth();
     const navigate = useNavigate();
 
+    const sighUpUser = useSignUpUser()
 
-
-    const sendUserMutation = useMutation({
-        mutationFn: (newUser: IUser) =>
-            api.post(API_ENDPOINTS.SIGNUP, {
-                email: newUser.email,
-                password: newUser.password,
-            }),
-        onSuccess: async (data) => {
-            setTokens(data.data);
+    const onSubmit = async (data: IUser) => {
+        try {
+            const res = await sighUpUser.mutateAsync(data)
+            setTokens(res.data);
             navigate(ROUTES.MAIN, { replace: true });
-        },
-        onError: (error) => {
-            console.error(error);
+        } catch (e) {
+            console.error(e);
         }
-    });
-
-
-    const onSubmit = (data: FieldValues) => {
-        console.log("register");
-        sendUserMutation.mutate(
-            {
-                email: data.email,
-                password: data.password},
-        )
     }
 
     return (
@@ -65,10 +49,10 @@ const Registration = () => {
                     <Input name="email" placeholder="Почта" minWidth="250px" required />
                     <PasswordInput name="password" placeholder="Пароль" minWidth="250px" required />
                     <Button
-                        disabled={sendUserMutation.isPending}
+                        disabled={sighUpUser.isPending}
                         type="submit"
                         minWidth="180px"
-                    >{sendUserMutation.isPending ? 'Создание...' : 'Зарегистрироваться'}</Button>
+                    >{sighUpUser.isPending ? 'Создание...' : 'Зарегистрироваться'}</Button>
                 </form>
             </FormProvider>
             {/*<Link onClick={() => navigate(ROUTES.LOGIN)}>Авторизоваться</Link>*/}

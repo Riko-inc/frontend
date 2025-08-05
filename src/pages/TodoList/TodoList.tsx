@@ -14,7 +14,6 @@ import {
 } from "@dnd-kit/core";
 import {ITaskResponse, TStatus} from "../../shared/types.ts";
 import Task from "./Task.tsx";
-import SortableItem from "./SortableItem.tsx";
 import {api} from "../../app";
 import {API_ENDPOINTS} from "../../shared/endpoints.ts";
 import {useQueryClient} from "@tanstack/react-query";
@@ -215,16 +214,19 @@ const TodoList = () => {
                         <TaskModules statusKey={statusKey} statusLabel={statusLabel} filters={filters} />
                     </div>
                 ))}
-                <DragOverlay>
-                    {activeTask && (
-                        <>
-                            {/*<SortableItem id={activeTask.taskId} isDragging>*/}
-                            {/*    <Task task={activeTask} />*/}
-                            {/*</SortableItem>*/}
-                            <Task task={activeTask} />
-                        </>
-                    )}
-                </DragOverlay>
+
+
+
+                {/*<DragOverlay>*/}
+                {/*    {activeTask && (*/}
+                {/*        <>*/}
+                {/*            /!*<SortableItem id={activeTask.taskId} isDragging>*!/*/}
+                {/*            /!*    <Task task={activeTask} />*!/*/}
+                {/*            /!*</SortableItem>*!/*/}
+                {/*            <Task task={activeTask} />*/}
+                {/*        </>*/}
+                {/*    )}*/}
+                {/*</DragOverlay>*/}
 
         </>
     )
